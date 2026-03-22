@@ -1,0 +1,46 @@
+
+$primary: #FF4655;     
+$secondary: #0F1923;   
+$accent: #FF8E00;    
+$dark: #121212;
+$light: #F8F9FA;
+
+
+$text-primary: #ECE8E1;
+$text-secondary: #8B949E;
+$text-muted: #6C757D;
+
+
+$font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$font-family-heading: 'Tahoma', 'Geneva', sans-serif;
+
+
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3
+);
+
+
+$border-radius: 8px;
+$border-radius-lg: 12px;    
+$border-radius-xl: 20px;
+
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+
+$breakpoints: (
+  'xs': 0,
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+  'xxl': 1400px
+);

@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "slug": "new-counter-strike-update",
+    "title": "Вышло крупное обновление Counter-Strike 2 с новыми картами",
+    "excerpt": "Valve выпустила масштабный патч, добавляющий две новые карты, балансные изменения и исправления багов.",
+    "content": "Valve выпустила масштабный патч для Counter-Strike 2, который добавляет две новые карты — Pool Day и Assembly. Кроме того, разработчики провели балансные изменения оружия, улучшили работу сетевого кода и исправили множество багов, связанных с физикой гранат. Обновление уже доступно для загрузки.",
+    "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800",
+    "category": {
+      "id": 1,
+      "name": "Киберспорт",
+      "slug": "esports"
+    },
+    "author": {
+      "id": 1,
+      "name": "Алексей Геймеров"
+    },
+    "publishedAt": "2024-12-29T10:30:00Z",
+    "createdAt": "2024-12-28T14:20:00Z",
+    "views": 12543,
+    "tags": ["CS2", "Valve", "Обновление", "Киберспорт"],
+    "isFeatured": true
+  },
+  {
+    "id": 2,
+    "slug": "new-xbox-announcement",
+    "title": "Microsoft анонсирует новую версию Xbox Series X",
+    "excerpt": "На выставке CES 2024 представлена обновлённая консоль с улучшенной производительностью и дизайном.",
+    "content": "Microsoft представила на CES 2024 новую версию Xbox Series X, получившую неофициальное название «Xbox Series X Pro». Консоль оснащена более мощным графическим процессором, поддержкой Wi-Fi 6E и увеличенным SSD на 2 ТБ. Дизайн стал более компактным, а система охлаждения — тише. Релиз ожидается в конце года.",
+    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=800",
+    "category": {
+      "id": 2,
+      "name": "Консоли",
+      "slug": "consoles"
+    },
+    "author": {
+      "id": 2,
+      "name": "Мария Технова"
+    },
+    "publishedAt": "2024-12-28T16:45:00Z",
+    "createdAt": "2024-12-27T11:10:00Z",
+    "views": 8921,
+    "tags": ["Xbox", "Microsoft", "Консоли", "Анонс"],
+    "isFeatured": false
+  },
+  {
+    "id": 3,
+    "slug": "best-games-2024",
+    "title": "Итоги года: 10 лучших игр 2024 по версии GameNews",
+    "excerpt": "Мы собрали самые впечатляющие проекты уходящего года, которые должен попробовать каждый геймер.",
+    "content": "Редакция GameNews представляет десятку лучших игр 2024 года. В список вошли такие проекты, как Elden Ring: Shadow of the Erdtree, Final Fantasy VII Rebirth, Hades II, Black Myth: Wukong и другие. Мы оценивали сюжет, геймплей, графику и инновационность. Полный рейтинг с подробным описанием каждой игры читайте в нашей статье.",
+    "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800",
+    "category": {
+      "id": 3,
+      "name": "Рейтинги",
+      "slug": "ratings"
+    },
+    "author": {
+      "id": 3,
+      "name": "Иван Обзоров"
+    },
+    "publishedAt": "2024-12-27T12:00:00Z",
+    "createdAt": "2024-12-26T09:15:00Z",
+    "views": 15789,
+    "tags": ["Итоги года", "Топ-10", "2024", "Обзор"],
+    "isFeatured": true
+  },
+  {
+    "id": 4,
+    "slug": "valorant-championship-results",
+    "title": "Комната Team Liquid стала чемпионом Valorant Champions 2024",
+    "excerpt": "В драматичном финале европейская команда одержала победу над бразильскими фаворитами со счётом 3:2.",
+    "content": "Финал Valorant Champions 2024 завершился победой Team Liquid, обыгравшей LOUD со счётом 3:2. Решающая карта на Icebox завершилась со счётом 13:11. Самым ценным игроком матча признан nAts. Это первое чемпионство для европейской организации на мировой арене Valorant.",
+    "image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800",
+    "category": {
+      "id": 1,
+      "name": "Киберспорт",
+      "slug": "esports"
+    },
+    "author": {
+      "id": 1,
+      "name": "Алексей Геймеров"
+    },
+    "publishedAt": "2024-12-26T20:15:00Z",
+    "createdAt": "2024-12-26T18:30:00Z",
+    "views": 23456,
+    "tags": ["Valorant", "Киберспорт", "Чемпионат", "Team Liquid"],
+    "isFeatured": false
+  },
+  {
+    "id": 5,
+    "slug": "playstation-vr2-price-drop",
+    "title": "Цена на PlayStation VR2 снижена на 30% перед Новым годом",
+    "excerpt": "Sony объявила о значительном снижении стоимости гарнитуры VR в преддверии праздничных распродаж.",
+    "content": "Sony снизила цену на PlayStation VR2 с 550 до 385 долларов. Акция действует до конца января во всех регионах. Аналитики связывают снижение с желанием увеличить продажи перед выходом новых эксклюзивных VR-игр, включая Horizon Call of the Mountain 2. В комплекте с гарнитурой также предлагаются скидки на игры.",
+    "image": "https://images.unsplash.com/photo-1593118247619-e2d6f056869e?auto=format&fit=crop&w=800",
+    "category": {
+      "id": 4,
+      "name": "VR/AR",
+      "slug": "vr-ar"
+    },
+    "author": {
+      "id": 4,
+      "name": "Олег Виртуальный"
+    },
+    "publishedAt": "2024-12-25T09:20:00Z",
+    "createdAt": "2024-12-24T15:40:00Z",
+    "views": 5678,
+    "tags": ["PlayStation", "VR", "Цены", "Sony"],
+    "isFeatured": false
+  },
+  {
+    "id": 6,
+    "slug": "indie-game-of-the-year",
+    "title": "Независимая игра 'Stray Souls' получает награду 'Инди-проект года'",
+    "excerpt": "Небольшая студия из Польши создала хоррор, покоривший сердца игроков и критиков по всему миру.",
+    "content": "На церемонии The Game Awards 2024 игра Stray Souls от польской студии Jujubee признана лучшим инди-проектом года. Хоррор на выживание с элементами психологического триллера получил высокие оценки за атмосферу, сюжет и оригинальную механику. За первую неделю продаж было продано более 500 тысяч копий.",
+    "image": "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800",
+    "category": {
+      "id": 5,
+      "name": "Инди-игры",
+      "slug": "indie"
+    },
+    "author": {
+      "id": 2,
+      "name": "Мария Технова"
+    },
+    "publishedAt": "2024-12-24T14:10:00Z",
+    "createdAt": "2024-12-23T12:25:00Z",
+    "views": 4321,
+    "tags": ["Инди", "Награды", "Хоррор", "Stray Souls"],
+    "isFeatured": false
+  }
+]
