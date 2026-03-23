@@ -21,7 +21,17 @@
     />
 
     <div class="article-content" v-html="article.content"></div>
-
+    <div v-if="article.author" class="author-block">
+        <div class="author-info">
+          <h3>Автор: {{ article.author.name }}</h3>
+             <p class="author-bio">{{ article.author.bio || 'Нет дополнительной информации' }}</p>
+        </div>
+       <div class="telegram-link">
+         <a :href="config.public.telegramChannelUrl" target="_blank" rel="noopener noreferrer" class="tg-button">
+      📢 Telegram-канал
+         </a>
+       </div>
+    </div>
     
     <ShareButtons 
       :title="article.title" 
@@ -34,6 +44,16 @@
     <div v-if="article.tags?.length" class="article-tags">
       <span v-for="tag in article.tags" :key="tag" class="tag">#{{ tag }}</span>
     </div>
+  <div v-if="relatedArticles.length" class="related-articles">
+  <h2 class="related-title">Читайте также</h2>
+    <div class="related-grid">
+    <ArticleCard 
+      v-for="article in relatedArticles" 
+      :key="article.id" 
+      :article="article" 
+    />
+       </div>
+     </div>
   </div>
   <div v-else class="not-found">Статья не найдена</div>
 </template>
@@ -53,7 +73,7 @@ const { data: article, pending } = await useFetch<Article>(
   () => `${config.public.apiBaseUrl}/articles/${route.params.slug}`
 )
 
-
+console.log(article)
 const formatDate = (dateString: string) => {
   const date = dayjs(dateString)
   dayjs.locale('ru')
@@ -72,6 +92,13 @@ const formatViews = (views: number) => {
 
 const shareUrl = computed(() => `${config.public.siteUrl}/news/${article.value?.slug}`)
 
+const { data: related } = await useFetch(
+  () => `${config.public.apiBaseUrl}/articles?category=${article.value?.category?.slug || ''}&limit=4`
+)
+const relatedArticles = computed(() => {
+  if (!related.value) return []
+  return related.value.filter(a => a.slug !== route.params.slug).slice(0, 3)
+})
 
 useSeoMeta({
   title: () => article.value?.title || 'Статья',
@@ -122,6 +149,7 @@ useHead({
 
 <style scoped lang="scss">
 @use '~/assets/scss/variables' as *;
+@use '~/assets/scss/mixins' as *;
 
 .article-page {
   max-width: 800px;
@@ -249,5 +277,73 @@ useHead({
   text-align: center;
   padding: 3rem;
   color: $text-muted;
+}
+
+.author-block {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba($primary, 0.05);
+  border-radius: $border-radius;
+  border-left: 3px solid $primary;
+}
+
+.author-info {
+  margin-bottom: 1rem;
+  h3 {
+    color: $primary;
+    margin-bottom: 0.5rem;
+  }
+  .author-bio {
+    font-size: 0.9rem;
+    color: $text-secondary;
+    line-height: 1.5;
+  }
+}
+
+.telegram-link {
+  text-align: right;
+  .tg-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #26A5E4;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 24px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    &:hover {
+      background: #1f8fc9;
+    }
+  }
+}
+.related-articles {
+  margin-top: 3rem;
+}
+
+.related-title {
+  font-size: 1.5rem;
+  color: $primary;
+  margin-bottom: 1.5rem;
+  position: relative;
+  &::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: $primary;
+    margin-top: 0.5rem;
+  }
+}
+
+.related-grid {
+  @include grid(3, 1.5rem);
+  @include media('md') {
+    @include grid(2, 1rem);
+  }
+  @include media('sm') {
+    @include grid(1, 1rem);
+  }
 }
 </style>

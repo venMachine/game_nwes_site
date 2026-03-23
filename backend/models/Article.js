@@ -14,7 +14,8 @@ const articleSchema = new mongoose.Schema({
   author: {
     id: Number,
     name: String,
-    avatar: String
+    avatar: String,
+    bio: String
   },
   publishedAt: Date,
   views: { type: Number, default: 0 },

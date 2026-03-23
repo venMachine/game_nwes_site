@@ -4,17 +4,17 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxtjs/sitemap'
-    // '@nuxt/icon' // если устанавливали, раскомментируйте
+   
   ],
-
-  // Настройки sitemap
-
-  // Глобальные CSS/SCSS файлы
+plugins: [
+  '~/plugins/fontawesome.js'
+],
+  
   css: [
     '~/assets/scss/main.scss'
   ],
 
-  // Настройки приложения (head, мета-теги)
+  
   app: {
     head: {
       title: 'GameNews - Игровые новости',
@@ -48,7 +48,7 @@ export default defineNuxtConfig({
   // },
 
 
-  // Настройки модуля изображений
+  
   image: {
     provider: 'ipx',
     quality: 80,
@@ -63,31 +63,32 @@ export default defineNuxtConfig({
     }
   },
 
-  // Публичные переменные окружения (доступны на клиенте)
+ 
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5000/api',
-      siteUrl: process.env.SITE_URL || 'http://localhost:3000'
+      siteUrl: process.env.SITE_URL || 'http://localhost:3000',
+      telegramChannelUrl: 'https://t.me/news_barracuda' 
     }
   },
 
-  // Включение Nuxt DevTools
+ 
   devtools: { enabled: true },
 
-  // Настройки TypeScript (упрощённые для разработки)
+  
   typescript: {
     strict: false,
     typeCheck: false
   },
 
-  // Конфигурация Nitro (серверный движок)
+ 
   nitro: {
     prerender: {
       routes: ['/'] // предварительная генерация главной страницы
     }
   },
 
-  // Совместимость с Nuxt 4 (если нужно)
+
   future: {
     compatibilityVersion: 4
   }

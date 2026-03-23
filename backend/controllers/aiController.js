@@ -1,5 +1,64 @@
 const OpenAI = require('openai');
+const Parser = require('rss-parser');
+const parser = new Parser();
 
+// Список RSS-лент (можно добавлять/удалять)
+const RSS_FEEDS = [
+    'https://rss.stopgame.ru/rss_news.xml',
+    'https://feeds.feedburner.com/ign/news',
+    'https://www.pcgamer.com/rss',
+    'https://www.goha.ru/rss/news',
+    'https://www.igromania.ru/rss/news.xml',
+    'https://dtf.ru/rss',
+    'https://www.goha.ru/rss/videogames',
+    'https://www.goha.ru/rss/mobile-games',
+    'https://www.goha.ru/rss/mmorpg',
+    'https://www.ixbt.com/export/news.rss',
+    'https://www.ixbt.com/export/sec_video.rss',
+    'https://www.ixbt.com/export/sec_editorial.rss',
+    'https://www.uploadvr.com/feed/',
+    'https://skarredghost.com/feed/',
+    'https://www.gamedeveloper.com/rss.xml'
+];
+
+// Функция получения последних новостей из RSS
+async function fetchRealNewsFromRSS(query) {
+  try {
+    let allArticles = [];
+    for (const feedUrl of RSS_FEEDS) {
+      try {
+        const feed = await parser.parseURL(feedUrl);
+        const articles = feed.items.slice(0, 5).map(item => ({
+          title: item.title,
+          link: item.link,
+          contentSnippet: item.contentSnippet || item.summary || '',
+          pubDate: item.pubDate
+        }));
+        allArticles = allArticles.concat(articles);
+      } catch (err) {
+        console.error(`Ошибка парсинга RSS ${feedUrl}:`, err.message);
+      }
+    }
+    if (allArticles.length === 0) return null;
+    // Сортируем по дате и берём 5 самых свежих
+    allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    const latest = allArticles.slice(0, 5);
+    // Формируем текстовый контекст
+    const context = latest.map((item, idx) => {
+      let domain = '';
+      try {
+        domain = new URL(item.link).hostname;
+      } catch (e) { domain = 'источник'; }
+      return `[${idx+1}] ${item.title}\nИсточник: ${domain}\nСсылка: ${item.link}\nКратко: ${item.contentSnippet.substring(0, 200)}`;
+    }).join('\n\n');
+    return context;
+  } catch (error) {
+    console.error('Ошибка получения RSS-новостей:', error.message);
+    return null;
+  }
+}
+
+// Стили авторов (оставляем как есть)
 const authorStyles = {
   1: {
     name: 'Дмитрий Red Vision',
@@ -58,18 +117,18 @@ exports.generateNews = async (req, res) => {
       return res.status(400).json({ error: 'Автор не найден' });
     }
 
-    if (!process.env.AITUNNEL_API_KEY) {
-      return res.status(500).json({ error: 'Настройки API не заданы' });
-    }
+    // Получаем реальные новости из RSS
+    let realNewsContext = await fetchRealNewsFromRSS(category);
 
-  
+    // Динамический диапазон "последний месяц"
     const now = new Date();
     const currentMonth = now.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
     const oneMonthAgo = new Date(now);
     oneMonthAgo.setMonth(now.getMonth() - 1);
     const previousMonth = oneMonthAgo.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
 
-    const prompt =  `Требуется сгенерировать JSON-объект, представляющий **реальную, свежую новость** из мира компьютерных игр по тематике "${category}". 
+    // Формируем промпт
+    let prompt = `Требуется сгенерировать JSON-объект, представляющий **реальную, свежую новость** из мира компьютерных игр по тематике "${category}". 
 
 **АВТОР:** Новость должна быть написана от лица журналиста **${author.name}**. В тексте можно использовать местоимение "я" или упоминать своё имя, если это уместно для стиля.
 
@@ -80,30 +139,39 @@ exports.generateNews = async (req, res) => {
 - Дата события (например, в тексте новости или в подразумеваемом контексте) **обязательно должна попадать в этот диапазон**.
 - Если точная дата неизвестна, укажи примерный период: "в начале марта 2026", "в середине февраля 2026" и т.п.
 
-**КРИТИЧЕСКИ ВАЖНО:**
-- **ЗАПРЕЩЕНО ВЫДУМЫВАТЬ НЕСУЩЕСТВУЮЩИЕ ИГРЫ, ДОПОЛНЕНИЯ, СТУДИИ, РАЗРАБОТЧИКОВ, ДАТЫ.**
-- Используй только **реальные, хорошо известные проекты** (например: Cyberpunk 2077, The Witcher 3, Elden Ring, GTA VI, Starfield, Baldur's Gate 3, Hogwarts Legacy, Minecraft, Dota 2, CS2, Valorant, League of Legends). 
-- Для категории **«Компьютерные игры»** разрешено писать о:
-  * Выходе официальных обновлений/патчей (например, "Вышел патч 2.0 для Cyberpunk 2077").
-  * Юбилеях (например, "20 лет The Elder Scrolls IV: Oblivion").
-  * Новостях о разработчиках (например, "Создатель Portal покидает Valve").
-  * Слухах о предстоящих играх, но с оговоркой (например, "По слухам, GTA VI выйдет в конце 2026 года").
-  * Реальных событиях (например, "CD Projekt RED анонсировала новую игру").
-- **НЕ ВЫДУМЫВАЙ** названия игр, дополнений, студий. Если не знаешь точных фактов — используй реальные, но хорошо известные, и пиши о них.
-- Если пишешь про киберспорт — обязательно используй реальные названия команд, турниров, игроков (примеры: Dota 2 — Team Spirit, OG, Gaimin Gladiators; CS2 — FaZe, NAVI, Vitality; Valorant — LOUD, FNATIC; League of Legends — T1, Gen.G).
-- Для новостей о релизах: укажи конкретную дату выхода (например, "15 марта 2026 года") — она должна быть в пределах последнего месяца.
-- Для инди-игр: название студии, приблизительная цена, ссылка на Steam (если есть).
+`;
+
+    if (realNewsContext) {
+      prompt += `**РЕАЛЬНЫЕ НОВОСТИ ДЛЯ ОСНОВЫ (используй их факты, не выдумывай!):**\n${realNewsContext}\n\n`;
+    } else {
+      prompt += `**ВАЖНО:** У тебя нет доступа к актуальным новостям, поэтому, если не знаешь реальных событий, сгенерируй 
+      текст как художественную интерпретацию возможных событий, но с указанием, что это "предположительно"
+      **ЗАПРЕЩЕНО ВЫДУМЫВАТЬ НЕСУЩЕСТВУЮЩИЕ ИГРЫ, ДОПОЛНЕНИЯ, СТУДИИ, РАЗРАБОТЧИКОВ, ДАТЫ.**
+        - Используй только **реальные, хорошо известные проекты** (например: Cyberpunk 2077, The Witcher 3, Elden Ring, GTA VI, Starfield, Baldur's Gate 3, Hogwarts Legacy, Minecraft, Dota 2, CS2, Valorant, League of Legends). 
+        - Для категории **«Компьютерные игры»** разрешено писать о:
+          * Выходе официальных обновлений/патчей (например, "Вышел патч 2.0 для Cyberpunk 2077").
+          * Юбилеях (например, "20 лет The Elder Scrolls IV: Oblivion").
+          * Новостях о разработчиках (например, "Создатель Portal покидает Valve").
+          * Слухах о предстоящих играх, но с оговоркой (например, "По слухам, GTA VI выйдет в конце 2026 года").
+          * Реальных событиях (например, "CD Projekt RED анонсировала новую игру").
+        - **НЕ ВЫДУМЫВАЙ** названия игр, дополнений, студий. Если не знаешь точных фактов — используй реальные, но хорошо известные, и пиши о них.
+        - Если пишешь про киберспорт — обязательно используй реальные названия команд, турниров, игроков (примеры: Dota 2 — Team Spirit, OG, Gaimin Gladiators; CS2 — FaZe, NAVI, Vitality; Valorant — LOUD, FNATIC; League of Legends — T1, Gen.G).
+        - Для новостей о релизах: укажи конкретную дату выхода (например, "15 марта 2026 года") — она должна быть в пределах последнего месяца.
+        - Для инди-игр: название студии, приблизительная цена, ссылка на Steam (если есть).
+        - Ссылки на официальные источники
+        - Больше фактуры   
+      .\n\n`;
+    }
+
+    prompt += `**КРИТИЧЕСКИ ВАЖНО:**
+- **НЕ ВЫДУМЫВАЙ НЕСУЩЕСТВУЮЩИЕ ИГРЫ, ДОПОЛНЕНИЯ, СТУДИИ, РАЗРАБОТЧИКОВ, ДАТЫ.**
+- Используй только **реальные, хорошо известные проекты**.
+- Если ты используешь реальные новости из контекста, **сохраняй все факты (названия, даты, цифры)**, но можешь переписать в заданном стиле.
 
 **ТРЕБОВАНИЯ К КОНКРЕТИКЕ:**
 - Обязательно укажи конкретное название игры (реальной).
 - Для киберспорта: название турнира, место проведения, призовой фонд, названия команд, имена игроков, счёт.
 - Добавь цифры, даты, конкретные факты. Избегай общих фраз.
-
-**ПРИМЕР ДЛЯ СТИЛЯ КСЕНИИ СОБЧАК (для ориентира):**
-"В середине марта 2026 года в мире VRChat разгорелся такой скандал, что даже я, Ксения Danch, решила не молчать. Один из топ-контент-мейкеров, которого все боготворили, оказался отъявленным хамом. Инсайдеры слили переписку, где он оскорбляет фанатов и хайпует на чужом контенте..."
-
-**ПРИМЕР РЕАЛЬНОЙ НОВОСТИ В СТИЛЕ ПРОХАНОВА (для категории «Компьютерные игры»):**
-"В середине марта 2026 года, когда мир ожидал выхода долгожданного патча 2.0 для Cyberpunk 2077, разработчики из CD Projekt Red вновь доказали, что судьба их детища — вечное движение к совершенству. Согласно официальному заявлению, обновление, которое выйдет 25 марта, принесёт не только исправления ошибок, но и новую систему полиции, полностью переработанные деревья навыков и поддержку трассировки лучей на консолях нового поколения. Призрачный огонь надежды, казалось, угасший после неоднозначного запуска игры, вновь разгорелся в сердцах пассионариев..."
 
 **ФОРМАТ JSON:**
 {
@@ -111,11 +179,12 @@ exports.generateNews = async (req, res) => {
   "excerpt": "Краткое описание (1-2 предложения, суть)",
   "content": "Полный текст новости (не менее 2 абзацев, общий объём текста – минимум 2000 знаков с пробелами. Каждый абзац должен содержать конкретные детали, имена, цифры и быть написан строго в заданном стиле.)",
   "tags": ["тег1", "тег2", "название игры", "жанр"],
-  "image": "https://images.pexels.com/..." (или пустая строка)
+  "image": "https://images.unsplash.com/..." (или пустая строка)
 }
 
 Верни только JSON, без каких-либо пояснений, рассуждений или дополнительного текста. Не используй markdown.`;
 
+    // Вызов AITUNNEL
     const client = new OpenAI({
       apiKey: process.env.AITUNNEL_API_KEY,
       baseURL: 'https://api.aitunnel.ru/v1/'
@@ -128,12 +197,12 @@ exports.generateNews = async (req, res) => {
       max_tokens: 3000
     });
 
-    const content = response.choices?.[0]?.message?.content;
+    const content = response.choices[0].message.content;
     if (!content) {
       return res.status(500).json({ error: 'AI вернул пустой ответ' });
     }
 
-    // Извлечение JSON
+    // Извлекаем JSON
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       console.error('Не удалось найти JSON в ответе:', content);
@@ -157,3 +226,14 @@ exports.generateNews = async (req, res) => {
     res.status(500).json({ error: 'Ошибка при обращении к AI' });
   }
 };
+
+
+
+
+
+
+
+
+
+
+

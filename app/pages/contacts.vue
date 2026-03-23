@@ -12,13 +12,7 @@
             <p><a href="mailto:u272511@yandex.ru">u272511@yandex.ru</a></p>
           </div>
         </div>
-        <div class="contact-item">
-          <span class="contact-icon">📱</span>
-          <div>
-            <strong>Телефон</strong>
-            <p><a href="tel:+79150621676">8 (915) 0621676</a></p>
-          </div>
-        </div>
+
        
       </div>
     </section>
@@ -27,9 +21,7 @@
       <h2>Социальные сети</h2>
       <div class="social-links">
         <a href="https://t.me/news_barracuda" target="_blank" rel="noopener" class="social-link">Telegram</a>
-        <!-- <a href="#" target="_blank" rel="noopener" class="social-link">VK</a>
-        <a href="#" target="_blank" rel="noopener" class="social-link">YouTube</a> -->
-        <!-- <a href="#" target="_blank" rel="noopener" class="social-link">Twitter</a> -->
+
       </div>
     </section>
 

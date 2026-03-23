@@ -52,13 +52,22 @@
               </li>
             </ul>
           </nav>
-
+          <a 
+            :href="config.public.telegramChannelUrl" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="telegram-link"
+            aria-label="Telegram канал"
+          >
+            <font-awesome-icon :icon="['fab', 'telegram']" />
+          </a>
           
           <div class="search">
             <NuxtLink to="/search" class="search__btn">
                 <span class="search__icon">🔍</span>
-            </NuxtLink>
+            </NuxtLink> 
           </div>
+
         </div>
       </div>
     </header>
@@ -99,7 +108,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-
+const config = useRuntimeConfig()
 const menuOpen = ref(false)
 refreshNuxtData() 
 </script>
@@ -380,6 +389,32 @@ refreshNuxtData()
   p {
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
+  }
+}
+.telegram-header {
+  margin-left: 0.5rem;
+}
+
+.telegram-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba($primary, 0.1);
+  border-radius: 50%;
+  transition: background 0.3s;
+  color: $text-primary;
+  margin-right: 5px;
+
+  &:hover {
+    background: rgba($primary, 0.2);
+    color: $primary;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
   }
 }
 </style>

@@ -88,7 +88,8 @@ export interface Article {
   author?: {
     id: number
     name: string
-    avatar?: string
+    avatar?: string,
+    bio?: String
   }
   publishedAt?: string
   createdAt: string
