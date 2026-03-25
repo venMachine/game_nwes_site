@@ -151,7 +151,7 @@ const categories = [
 
 
 const authors = [
-  { id: 1, name: 'Дмитрий Red Vision', bio: 'Журналист с 20-летним стажем, специализируется на публицистике.' },
+  { id: 1, name: 'Дмитрий Red Vision', bio: 'Журналист. 20 лет в игровой публицистике.' },
   { id: 2, name: 'Эдвард Fox', bio: 'Историк и автор множества статей о  киберспорте. Ведёт Telegram-канал о геймдизайне.' },
   { id: 3, name: 'Дмитрий Ounth', bio: 'Литературный обозреватель, эссеист. Ведёт подкаст о narrative-дизайне.' },
   { id: 4, name: 'Ксения Danch', bio: ' Колумнист. Известна острыми интервью и провокационными обзорами игровых новинок.' },
@@ -186,8 +186,11 @@ const generateNews = async () => {
         category: selectedCategory.value.name
       }
     });
-
-  
+    if (response.error) {
+     alert(`Ошибка: ${response.error}. Попробуйте другую категорию.`);
+    return;
+    }
+    
     if (response.title) localData.value.title = response.title;
     if (response.excerpt) localData.value.excerpt = response.excerpt;
     if (response.content) localData.value.content = response.content;

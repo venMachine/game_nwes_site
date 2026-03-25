@@ -1,6 +1,6 @@
 <template>
   <div class="category-page">
-    <AdBanner />
+    <!-- <AdBanner /> -->
     <h1 class="page-title">Киберспорт</h1>
 
     <div v-if="!pending && articles.length" class="news-grid">

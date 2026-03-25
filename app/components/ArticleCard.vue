@@ -17,14 +17,19 @@
         />
         
         
-        <span class="article-card__category">
-          {{ article.category?.name || 'Игры' }}
-        </span>
-        
-     
-        <span v-if="article.isFeatured" class="article-card__featured">
-          ⭐
-        </span>
+            <span class="article-card__category">
+            {{ article.category?.name || 'Игры' }}
+          </span>
+
+          <!-- Звёздочка только у рекомендованных новостей (кроме главной) -->
+          <span v-if="article.isFeatured && !featured" class="article-card__featured">
+            ⭐
+          </span>
+
+          <!-- Бейдж "Новость дня" только для featured пропса -->
+          <span v-if="featured" class="article-card__badge">
+            🌟 Новость дня
+          </span>
       </div>
 
      
@@ -233,6 +238,7 @@ const formatViews = (views: number) => {
   font-size: 1.1rem;
   backdrop-filter: blur(2px);
   z-index: 2;
+
 }
 
 .article-card__content {
@@ -317,5 +323,19 @@ const formatViews = (views: number) => {
     background: rgba($primary, 0.2);
     color: $text-primary;
   }
+}
+
+.article-card__badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: $primary;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  z-index: 2;
+  backdrop-filter: blur(4px);
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    
     <section class="hero">
       <div class="hero__content">
         <h1 class="hero__title">Barracuda</h1>
@@ -10,7 +9,6 @@
       </div>
     </section>
 
-    
     <div class="categories">
       <button 
         v-for="cat in categories" 
@@ -23,20 +21,24 @@
       </button>
     </div>
 
-    
-    <div v-if="filteredArticles.length" class="news-grid">
-      <ArticleCard 
-        v-for="article in filteredArticles" 
-        :key="article.id" 
-        :article="article"
-        :featured="article.isFeatured"
-      />
-    </div>
-    <div v-else class="no-news">
-      <p>Новостей пока нет. Скоро добавим!</p>
+    <!-- Выделенная новость (Новость дня) -->
+    <div v-if="featuredArticle" class="featured-wrapper">
+      <ArticleCard :article="featuredArticle" featured />
     </div>
 
-    
+    <!-- Сетка остальных новостей -->
+    <div v-if="otherArticlesLimited.length" class="news-grid">
+      <ArticleCard
+        v-for="article in otherArticlesLimited"
+        :key="article.id"
+        :article="article"
+      />
+    </div>
+    <div v-else-if="!pending && !featuredArticle && !otherArticlesLimited.length" class="no-news">
+      <p>Новостей пока нет. Скоро добавим!</p>
+    </div>
+    <div v-if="pending" class="loading">Загрузка...</div>
+
     <div v-if="hasMore" class="load-more">
       <button @click="loadMore" class="load-more__btn">
         Показать ещё
@@ -46,12 +48,8 @@
 </template>
 
 <script setup lang="ts">
-  refreshNuxtData()
-
-
-const config = useRuntimeConfig();
+const config = useRuntimeConfig()
 import type { Article } from '~/components/ArticleCard.vue'
-
 
 const categories = [
   { id: 0, name: 'Все', slug: 'all' },
@@ -60,42 +58,40 @@ const categories = [
   { id: 3, name: 'Рейтинги', slug: 'ratings' },
   { id: 4, name: 'VR/AR', slug: 'vr-ar' },
   { id: 5, name: 'Инди-игры', slug: 'indie' },
-   { id: 6, name: 'Компьютерные игры', slug: 'pc-games' }
+  { id: 6, name: 'Компьютерные игры', slug: 'pc-games' }
 ]
 
-
-
 const activeCategory = ref('all')
-const visibleCount = ref(6) 
-const hasMore = computed(() => visibleCount.value < articles.value.length)
+const visibleCount = ref(12)
 
-const { data: articles } = await useFetch<Article[]>(
-  () => `${config.public.apiBaseUrl}/articles?limit=20&category=${activeCategory.value}`
+const { data: articles, pending,  refresh } = await useFetch<Article[]>(
+  () => `${config.public.apiBaseUrl}/articles?limit=100&category=${activeCategory.value}`
 )
 
-const filteredArticles = computed(() => {
-  let filtered = articles.value
-  
-  if (activeCategory.value !== 'all') {
-    filtered = filtered.filter(
-      article => article.category?.slug === activeCategory.value
-    )
-  }
-  
-  return filtered.slice(0, visibleCount.value)
+const sortedArticles = computed(() => {
+  if (!articles.value) return []
+  return [...articles.value].sort((a, b) => 
+    new Date(b.publishedAt || b.createdAt) - new Date(a.publishedAt || a.createdAt)
+  )
 })
 
+const featuredArticle = computed(() => sortedArticles.value.find(a => a.isFeatured))
+const otherArticles = computed(() => sortedArticles.value.filter(a => a !== featuredArticle.value))
+const otherArticlesLimited = computed(() => otherArticles.value.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < otherArticles.value.length)
 
 const filterByCategory = (slug: string) => {
   activeCategory.value = slug
-  visibleCount.value = 9 // сброс пагинации
+  visibleCount.value = 12
+    refresh() 
 }
 
 const loadMore = () => {
-  visibleCount.value += 3
+  visibleCount.value += 6
 }
-
-
+onMounted(() => {
+  refresh()
+})
 useSeoMeta({
   title: 'BarracudaGame - Главная страница',
   description: 'Самые свежие новости из мира видеоигр, киберспорта и гейминга',
@@ -114,7 +110,6 @@ useSeoMeta({
   padding-bottom: 3rem;
 }
 
-/* Hero секция */
 .hero {
   background: linear-gradient(
       135deg,
@@ -125,7 +120,7 @@ useSeoMeta({
   background-size: cover;
   background-position: center;
   border-radius: $border-radius-lg;
-  padding: 4rem 2rem;
+  padding: 1rem 2rem;
   margin-bottom: 2rem;
   text-align: center;
 }
@@ -133,16 +128,11 @@ useSeoMeta({
 .hero__title {
   font-size: 3rem;
   color: white;
-  margin-bottom: 1rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  word-break: break-word; 
-  hyphens: auto; 
-  @include media('md') {
-    font-size: 2.5rem;
-  }
-  @include media('sm') {
-    font-size: 2rem;
-  }
+  word-break: break-word;
+  hyphens: auto;
+  @include media('md') { font-size: 2.5rem; }
+  @include media('sm') { font-size: 2rem; }
 }
 
 .hero__subtitle {
@@ -153,7 +143,6 @@ useSeoMeta({
   line-height: 1.6;
 }
 
-/* Фильтр категорий */
 .categories {
   @include flex(row, center, center);
   flex-wrap: wrap;
@@ -172,37 +161,31 @@ useSeoMeta({
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  
   &:hover {
     background: rgba($primary, 0.2);
     border-color: $primary;
   }
-  
   &--active {
     background: $primary;
     color: white;
     border-color: $primary;
-    
     &:hover {
       background: color-mix(in srgb, $primary, white 10%);
     }
   }
 }
 
-/* Сетка новостей */
-.news-grid {
-  @include grid(1, 1rem); 
-  
-  @include media('md') { // от 768px
-    @include grid(2, 1.25rem);
-  }
-  
-  @include media('lg') { // от 992px
-    @include grid(3, 1.5rem);
-  }
+.featured-wrapper {
+  margin-bottom: 2rem;
+  width: 100%;
 }
 
-/* Нет новостей */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
 .no-news {
   text-align: center;
   padding: 3rem;
@@ -212,6 +195,11 @@ useSeoMeta({
   border: 1px dashed rgba($primary, 0.2);
 }
 
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: $text-secondary;
+}
 
 .load-more {
   text-align: center;
@@ -228,7 +216,6 @@ useSeoMeta({
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  
   &:hover {
     background: $primary;
     color: white;

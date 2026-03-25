@@ -19,19 +19,30 @@
       height="630"
       loading="lazy"
     />
+ 
+    <div v-if="article.author" class="author-block">
+  <div class="author-avatar">
+    <img 
+      :src="`/authors/author-${article.author.id}.jpg`" 
+      :alt="article.author.name"
+      @error="e => e.target.src = '/authors/default-avatar.png'"
+    />
+  </div>
+  <div class="author-info">
+    <h3>Автор: {{ article.author.name }}</h3>
+    <p class="author-bio">{{ article.author.bio || 'Нет дополнительной информации' }}</p>
+  </div>
+  <div class="telegram-link">
+   <a :href="config.public.telegramChannelUrl" target="_blank" rel="noopener noreferrer" class="tg-button-icon" aria-label="Telegram-канал">
+  <font-awesome-icon :icon="['fab', 'telegram']" />
+</a>
+  </div>
+</div>
+
+
 
     <div class="article-content" v-html="article.content"></div>
-    <div v-if="article.author" class="author-block">
-        <div class="author-info">
-          <h3>Автор: {{ article.author.name }}</h3>
-             <p class="author-bio">{{ article.author.bio || 'Нет дополнительной информации' }}</p>
-        </div>
-       <div class="telegram-link">
-         <a :href="config.public.telegramChannelUrl" target="_blank" rel="noopener noreferrer" class="tg-button">
-      📢 Telegram-канал
-         </a>
-       </div>
-    </div>
+
     
     <ShareButtons 
       :title="article.title" 
@@ -170,7 +181,7 @@ useHead({
 }
 
 .article-title {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   color: $primary;
   margin-bottom: 1rem;
   
@@ -344,6 +355,75 @@ useHead({
   }
   @include media('sm') {
     @include grid(1, 1rem);
+  }
+}
+.author-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: .5rem;
+  background: rgba($primary, 0.05);
+  border-radius: $border-radius;
+  border-left: 3px solid $primary;
+}
+
+.author-avatar {
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $secondary;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.author-info {
+  flex: 1;
+}
+
+.telegram-link {
+  flex-shrink: 0;
+}
+
+.tg-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #26A5E4;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 24px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #1f8fc9;
+  }
+}
+.tg-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #26A5E4;
+  border-radius: 50%;
+  color: white;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #1f8fc9;
+  }
+
+  svg {
+    font-size: 1.2rem;
   }
 }
 </style>

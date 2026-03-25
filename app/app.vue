@@ -125,7 +125,7 @@ refreshNuxtData()
 
 
 .header {
-  background-color: color-mix(in srgb, $secondary, black 2%);
+  background-color: black;
   border-bottom: 1px solid rgba($primary, 0.1);
   padding: 1rem 0;
   position: sticky;
@@ -243,6 +243,7 @@ refreshNuxtData()
   cursor: pointer;
   @include flex(row, center, center);
   transition: background-color 0.3s ease;
+  text-decoration: none;
   
   &:hover {
     background-color: rgba($primary, 0.2);
@@ -405,7 +406,7 @@ refreshNuxtData()
   border-radius: 50%;
   transition: background 0.3s;
   color: $text-primary;
-  margin-right: 5px;
+  margin: 0 5px;
 
   &:hover {
     background: rgba($primary, 0.2);
