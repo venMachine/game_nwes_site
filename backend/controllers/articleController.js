@@ -4,7 +4,7 @@ const telegramService = require('../services/telegramService');
 
 exports.getAllArticles = async (req, res) => {
   try {
-    const { limit = 10, category } = req.query;
+    const { limit = 50, category } = req.query;
     const filter = category && category !== 'all' ? { 'category.slug': category } : {};
     const articles = await Article.find(filter)
       .sort({ createdAt: -1 })  // ← новые сначала

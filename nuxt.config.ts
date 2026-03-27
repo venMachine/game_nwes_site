@@ -35,19 +35,11 @@ plugins: [
       ]
     }
   },
-  //   sitemap: {
-  //   hostname: 'https://ваш-сайт.ru', // замените на реальный домен
-  //   gzip: true,
-  //   // можно динамически генерировать маршруты
-  //   routes: async () => {
-  //     // Например, подгрузить все статьи из API
-  //     // const articles = await $fetch('...')
-  //     // return articles.map(article => `/news/${article.slug}`)
-  //     return []
-  //   }
-  // },
-
-
+sitemap: {
+  hostname: 'https://barracudagame.ru',
+  gzip: true,
+  routes: async () => []
+} as any,
   
   image: {
     provider: 'ipx',
@@ -84,7 +76,7 @@ plugins: [
  
   nitro: {
     prerender: {
-      routes: ['/'] // предварительная генерация главной страницы
+      routes: ['/'] 
     }
   },
 

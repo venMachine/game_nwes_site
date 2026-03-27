@@ -253,7 +253,7 @@ refreshNuxtData()
 
 @media (max-width: 768px) {
   .hamburger {
-    display: flex; /* показываем гамбургер */
+    display: flex; 
     margin-left: auto;
     margin-right: 0.5rem;
   }
