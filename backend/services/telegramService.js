@@ -26,7 +26,7 @@ class TelegramService {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         let response;
-        if (imageUrl && this.isDirectImageUrl(imageUrl)) {
+        if (imageUrl) {
           response = await axios.post(`${this.apiUrl}/sendPhoto`, {
             chat_id: this.chatId,
             photo: imageUrl,
@@ -78,15 +78,14 @@ class TelegramService {
         .replace(/"/g, '&quot;');
     };
 
-    return `📰 <b>${escapeHtml(article.title)}</b>
+    return ` <b>${escapeHtml(article.title)}</b>
 
 ${escapeHtml(article.excerpt)}
 
-👤 Автор: ${article.author?.name || 'GameNews'}
-🏷️ Категория: ${article.category?.name || 'Игры'}
-🔗 Читать полностью: ${articleUrl}
+ Автор: ${article.author?.name || 'barracudagame'}
+ Читать полностью: ${articleUrl}
 
-#GameNews #${article.category?.slug || 'games'}`;
+#barracudagame #${article.category?.slug || 'games'}`;
   }
 }
 
