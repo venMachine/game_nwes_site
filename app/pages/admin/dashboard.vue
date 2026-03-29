@@ -15,11 +15,15 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+
+const user = process.client ? JSON.parse(localStorage.getItem('user') || '{}') : {}
 
 const logout = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
+  if (process.client) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+  }
   navigateTo('/admin/login')
 }
 </script>
