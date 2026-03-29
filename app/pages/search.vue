@@ -202,4 +202,34 @@ watch(query, () => {
   border-radius: $border-radius;
   border: 1px dashed rgba($primary, 0.2);
 }
+@media (max-width: 768px) {
+  .search-page {
+    padding: 1rem;
+  }
+
+  .search-page__title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-form__input {
+    border-radius: $border-radius;
+    border-right: 2px solid rgba($primary, 0.3);
+  }
+
+  .search-form__btn {
+    border-radius: $border-radius;
+    width: 100%;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr; /* одна колонка на телефонах */
+    gap: 1rem;
+  }
+}
 </style>

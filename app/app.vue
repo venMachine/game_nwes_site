@@ -94,6 +94,7 @@
           </div>
           <div class="footer__copyright">
             <p>&copy; 2024 BarracudaGame. Все права защищены.</p>
+             <p>© Илья Говорухин </p>
             <p class="footer__disclaimer">Все торговые марки принадлежат их правообладателям.</p>
           </div>
         </div>

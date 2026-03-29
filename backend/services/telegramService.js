@@ -1,7 +1,6 @@
 const axios = require('axios');
 require('dotenv').config();
 
-
 class TelegramService {
   constructor() {
     this.token = process.env.TELEGRAM_BOT_TOKEN;
@@ -9,15 +8,14 @@ class TelegramService {
     this.apiUrl = `https://api.telegram.org/bot${this.token}`;
   }
 
-
- isDirectImageUrl(url) {
+  isDirectImageUrl(url) {
     if (!url) return false;
     const imageExtensions = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
-    return imageExtensions.test(url.split('?')[0]); // отбрасываем параметры запроса
+    return imageExtensions.test(url.split('?')[0]);
   }
 
   async publishNews(article, retries = 2) {
-        if (!this.token || !this.chatId) {
+    if (!this.token || !this.chatId) {
       console.log('Telegram не настроен: отсутствуют токен или chat_id');
       return false;
     }
@@ -25,26 +23,34 @@ class TelegramService {
     const caption = this.formatMessage(article);
     const imageUrl = article.image;
 
-    const message = this.formatMessage(article);
-
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-              const response = await axios.post(`${this.apiUrl}/sendMessage`, {
-          chat_id: this.chatId,
-          text: caption,
-          parse_mode: 'HTML',
-          disable_web_page_preview: false   
-        }, {
-          timeout: 15000,
-          httpsAgent: this.agent,
-          httpAgent: this.agent
-        });
-
-        console.log(`✅ Новость опубликована в Telegram (ID: ${response.data.result.message_id})`);
+        let response;
+        if (imageUrl && this.isDirectImageUrl(imageUrl)) {
+          response = await axios.post(`${this.apiUrl}/sendPhoto`, {
+            chat_id: this.chatId,
+            photo: imageUrl,
+            caption: caption,
+            parse_mode: 'HTML',
+            disable_web_page_preview: false
+          }, {
+            timeout: 15000
+          });
+          console.log(`✅ Новость опубликована в Telegram с фото (ID: ${response.data.result.message_id})`);
+        } else {
+          response = await axios.post(`${this.apiUrl}/sendMessage`, {
+            chat_id: this.chatId,
+            text: caption,
+            parse_mode: 'HTML',
+            disable_web_page_preview: false
+          }, {
+            timeout: 15000
+          });
+          console.log(`✅ Новость опубликована в Telegram (текст, ID: ${response.data.result.message_id})`);
+        }
         return true;
       } catch (error) {
         if (attempt === retries) {
-          
           if (error.code === 'ECONNRESET') {
             console.error('❌ Ошибка сети при публикации в Telegram: соединение разорвано (возможно, блокировка)');
           } else if (error.response) {
@@ -54,7 +60,6 @@ class TelegramService {
           }
           return false;
         }
-     
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         console.log(`🔄 Повторная попытка публикации в Telegram (${attempt}/${retries})...`);
       }

@@ -98,18 +98,18 @@
       />
       <button 
         type="button" 
-        @click="searchPexels" 
-        :disabled="searchingPexels"
+        @click="searchUnsplash" 
+        :disabled="searchingImages"
         class="btn-secondary"
       >
-        {{ searchingPexels ? 'Поиск...' : 'Найти' }}
+        {{ searchingImages ? 'Поиск...' : 'Найти' }}
       </button>
     </div>
 
     
-    <div v-if="pexelsImages.length" class="pexels-results">
+    <div v-if="imagesResults.length" class="pexels-results">
       <div 
-        v-for="img in pexelsImages" 
+        v-for="img in imagesResults" 
         :key="img.id"
         class="pexels-thumb"
         @click="selectPexelsImage(img.url)"
@@ -165,8 +165,10 @@ const selectedAuthorId = ref(localData.value.author?.id || '')
 const newAuthorName = ref('')
 const saving = ref(false)
 const searchQuery = ref('')
-const pexelsImages = ref([])
-const searchingPexels = ref(false)
+// const pexelsImages = ref([])
+const imagesResults = ref([])
+// const searchingPexels = ref(false)
+const searchingImages = ref(false)
 
 
 const generateNews = async () => {
@@ -273,30 +275,46 @@ const handleSubmit = async () => {
 
 
 
-const searchPexels = async () => {
-  if (!searchQuery.value.trim()) return
-  searchingPexels.value = true
+// const searchPexels = async () => {
+//   if (!searchQuery.value.trim()) return
+//   searchingPexels.value = true
+//   try {
+//     const token = localStorage.getItem('token')
+//     console.log(token)
+//     const response = await $fetch(`${config.public.apiBaseUrl}/pexels/search`, {
+//       query: { query: searchQuery.value },
+//       headers: { Authorization: `Bearer ${token}` }
+//     })
+//     pexelsImages.value = response
+//   } catch (err) {
+//      console.log('sdsddd')
+//     alert('Ошибка поиска изображений')
+//     console.error(err)
+//   } finally {
+//     searchingPexels.value = false
+//   }
+// }
+const searchUnsplash = async () => {
+  if (!searchQuery.value.trim()) return;
+  searchingImages.value = true;
   try {
-    const token = localStorage.getItem('token')
-    console.log(token)
-    const response = await $fetch(`${config.public.apiBaseUrl}/pexels/search`, {
+    const token = process.client ? localStorage.getItem('token') : null;
+    const response = await $fetch(`${config.public.apiBaseUrl}/unsplash/search`, {
       query: { query: searchQuery.value },
       headers: { Authorization: `Bearer ${token}` }
-    })
-    pexelsImages.value = response
+    });
+    imagesResults.value = response;
   } catch (err) {
-     console.log('sdsddd')
-    alert('Ошибка поиска изображений')
-    console.error(err)
+    alert('Ошибка поиска изображений');
+    console.error(err);
   } finally {
-    searchingPexels.value = false
+    searchingImages.value = false;
   }
-}
-
+};
 
 const selectPexelsImage = (url) => {
   localData.value.image = url
-  pexelsImages.value = [] 
+  imagesResults.value = [] 
 }
 </script>
 

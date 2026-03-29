@@ -426,4 +426,32 @@ useHead({
     font-size: 1.2rem;
   }
 }
+.related-articles {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba($primary, 0.05);
+  border-radius: $border-radius;
+
+  h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .related-grid {
+      grid-template-columns: 1fr; /* одна колонка на мобильных */
+      gap: 0.75rem;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+    }
+  }
+}
 </style>

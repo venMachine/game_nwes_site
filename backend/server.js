@@ -5,21 +5,21 @@ const authRoutes = require('./routes/auth');
 const articleRoutes = require('./routes/articles');
 const aiRoutes = require('./routes/ai');
 const pexelsRoutes = require('./routes/pexels');
-
+const unsplashRoutes = require('./routes/unsplash');
 require('dotenv').config();
 
 const app = express();
 
 
 app.use(cors({
-  origin: ['http://barracudagame.ru', 'http://109.71.240.224']
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://barracudagame.ru', 'http://109.71.240.224']
 }));
 app.use(express.json());
 app.use('/api/articles', articleRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/pexels', pexelsRoutes);
-
+app.use('/api/unsplash', unsplashRoutes);
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))

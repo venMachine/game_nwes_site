@@ -76,3 +76,14 @@ img {
   }
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.article-card {
+  .article-card__image {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+}
