@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/image',
     '@nuxt/scripts',
-    '@nuxtjs/sitemap'
+   
    
   ],
 plugins: [
@@ -35,11 +35,7 @@ plugins: [
       ]
     }
   },
-sitemap: {
-  hostname: 'https://barracudagame.ru',
-  gzip: true,
-  routes: async () => []
-} as any,
+
   
   image: {
     provider: 'ipx',
