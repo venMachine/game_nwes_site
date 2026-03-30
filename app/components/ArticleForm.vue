@@ -109,7 +109,7 @@
     
     <div v-if="imagesResults.length" class="pexels-results">
       <div 
-        v-for="img in pexelsImages" 
+        v-for="img in imagesResults" 
         :key="img.id"
         class="pexels-thumb"
         @click="selectPexelsImage(img.url)"
@@ -154,7 +154,7 @@ const categories = [
 const authors = [
   { id: 1, name: 'Алексей «WinStrike» Воронов', bio: 'Главный редактор. 15 лет в игровой журналистике. Специализация — инсайды, расследования и внутренняя кухня разработки.' },
   { id: 2, name: 'Михаил «Mirage» Соколов', bio: 'Редактор отдела киберспорта. Следит за всеми топ-турнирами по Dota 2, CS2 и Valorant. Интервью с игроками и трендами сцены.' },
-  { id: 3, name: 'Иван «Retro» Морозов ', bio: 'Обозреватель. Отвечает за обзоры новых игр и ретроспективы культовых проектов. Любит находить скрытые жемчужины.' },
+  { id: 3, name: 'Иван «Retro» Морозов', bio: 'Обозреватель. Отвечает за обзоры новых игр и ретроспективы культовых проектов. Любит находить скрытые жемчужины.' },
   { id: 4, name: 'Елена «Pixel» Волкова', bio: 'Специалист по инди-играм и альтернативной сцене. Следит за новинками в itch.io и Steam.' },
   { id: 5, name: 'Кирилл «Code» Лебедев', bio: 'Технический аналитик. Разбирает графику, производительность и системные требования новинок.' }
 ];
@@ -300,15 +300,18 @@ const searchUnsplash = async () => {
   if (!searchQuery.value.trim()) return;
   searchingImages.value = true;
   try {
-    const token = process.client ? localStorage.getItem('token') : null;
-    const response = await $fetch(`${config.public.apiBaseUrl}/unsplash/search`, {
-      query: { query: searchQuery.value },
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    imagesResults.value = response;
+    if (process.client) {
+      const token = localStorage.getItem('token');
+      const response = await $fetch(`${config.public.apiBaseUrl}/unsplash/search`, {
+        query: { query: searchQuery.value },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      imagesResults.value = Array.isArray(response) ? response : [];
+      console.log('Найдено изображений:', imagesResults.value.length);
+    }
   } catch (err) {
+    console.error('Ошибка поиска изображений:', err);
     alert('Ошибка поиска изображений');
-    console.error(err);
   } finally {
     searchingImages.value = false;
   }
