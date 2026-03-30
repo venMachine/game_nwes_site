@@ -2,12 +2,12 @@
   <div class="advertising-page">
     <h1 class="page-title">Реклама на BarracudaGame</h1>
     
-    <section class="ad-section">
+    <section class="info-section">
       <h2>Почему стоит размещать рекламу у нас</h2>
       <p>Аудитория BarracudaGame — это тысячи активных геймеров, интересующихся новинками индустрии, киберспортом и технологиями. Мы предлагаем эффективные форматы для охвата вашей целевой аудитории.</p>
     </section>
 
-    <section class="ad-section">
+    <section class="info-section">
       <h2>Форматы рекламы</h2>
       <div class="formats-grid">
         <div class="format-card">
@@ -29,7 +29,7 @@
       </div>
     </section>
 
-    <section class="ad-section">
+    <section class="info-section">
       <h2>Контакты для сотрудничества</h2>
       <p>По всем вопросам обращайтесь на <a href="mailto:u272511@yandex.ru">u272511@yandex.ru</a> или через форму на странице <NuxtLink to="/contacts">контактов</NuxtLink>.</p>
     </section>
@@ -76,7 +76,7 @@ useSeoMeta({
   }
 }
 
-.ad-section {
+.info-section {
   margin-bottom: 3rem;
   
   h2 {
