@@ -121,6 +121,19 @@
         ym(108322152, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
       `,
       type: 'text/javascript'
+    },
+     {
+      src: 'https://www.googletagmanager.com/gtag/js?id=G-G66TBEFS9H',
+      async: true
+    },
+    {
+      innerHTML: `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-G66TBEFS9H');
+      `,
+      type: 'text/javascript'
     }
   ]
 })
