@@ -17,7 +17,7 @@ plugins: [
   
   app: {
     head: {
-      title: 'GameNews - Игровые новости',
+      title: 'BarracudaGame - Игровые новости',
       htmlAttrs: {
         lang: 'ru'
       },

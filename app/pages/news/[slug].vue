@@ -142,11 +142,11 @@ useHead({
         datePublished: article.value?.publishedAt || article.value?.createdAt,
         author: {
           '@type': 'Person',
-          name: article.value?.author?.name || 'GameNews'
+          name: article.value?.author?.name || 'BarracudaGame'
         },
         publisher: {
           '@type': 'Organization',
-          name: 'GameNews',
+          name: 'BarracudaGame',
           logo: {
             '@type': 'ImageObject',
             url: `${config.public.siteUrl}/logo.png`
