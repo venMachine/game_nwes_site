@@ -6,6 +6,7 @@ const articleRoutes = require('./routes/articles');
 const aiRoutes = require('./routes/ai');
 const pexelsRoutes = require('./routes/pexels');
 const unsplashRoutes = require('./routes/unsplash');
+const uploadRoutes = require('./routes/upload');
 require('dotenv').config();
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/pexels', pexelsRoutes);
 app.use('/api/unsplash', unsplashRoutes);
+app.use('/api/upload', uploadRoutes);
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))

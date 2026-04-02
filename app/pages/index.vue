@@ -116,7 +116,7 @@ useSeoMeta({
       rgba(15, 25, 35, 0.95) 0%,
       rgba(255, 70, 85, 0.2) 100%
     ),
-    url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');
+    url('https://res.cloudinary.com/dztn4jtdc/image/upload/v1775146102/photo-1511512578047-dfb367046420_c84nu2.avif');
   background-size: cover;
   background-position: center;
   border-radius: $border-radius-lg;

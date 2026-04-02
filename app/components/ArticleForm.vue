@@ -263,19 +263,51 @@ const handleNewAuthorInput = () => {
   }
 }
 
+
+
+
+
+
+const processImage = async (url) => {
+  
+  if (url && url.includes('cloudinary.com')) {
+    return url;
+  }
+  
+  try {
+    const token = process.client ? localStorage.getItem('token') : null;
+    const response = await $fetch(`${config.public.apiBaseUrl}/upload/from-url`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: { imageUrl: url }
+    });
+    return response.url;
+  } catch (err) {
+    console.error('Ошибка загрузки изображения:', err);
+    return url;
+  }
+};
+
+
 const handleSubmit = async () => {
-  saving.value = true
-  localData.value.tags = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean)
-  if (!localData.value.author) {
-    localData.value.author = { id: 1, name: 'GameNews', avatar: '' }
+  saving.value = true;
+    saving.value = true;
+  
+
+  if (localData.value.image && localData.value.image.trim() && 
+      !localData.value.image.includes('cloudinary.com')) {
+    const processedUrl = await processImage(localData.value.image);
+    localData.value.image = processedUrl;
   }
 
-  await emit('submit', localData.value)
-  saving.value = false
-}
-
-
-
+  localData.value.tags = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+  if (!localData.value.author) {
+    localData.value.author = { id: 1, name: 'GameNews', avatar: '' };
+  }
+  
+  await emit('submit', localData.value);
+  saving.value = false;
+};
 
 // const searchPexels = async () => {
 //   if (!searchQuery.value.trim()) return
