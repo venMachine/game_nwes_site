@@ -132,4 +132,32 @@ const formatDate = (dateString) => {
   padding: 2rem;
   color: $text-muted;
 }
+.news-feed {
+  background: #101A23;
+  border-radius: $border-radius-lg;
+  padding: 1.5rem;
+  margin: 0;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $primary rgba($primary, 0.2);
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba($primary, 0.1);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary, 0.5);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: $primary;
+  }
+}
 </style>
