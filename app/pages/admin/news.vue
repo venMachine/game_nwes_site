@@ -7,7 +7,7 @@
 
 <script setup>
 definePageMeta({ middleware: 'auth' })
-
+import { refreshNuxtData } from '#app'
 const config = useRuntimeConfig()
 const router = useRouter()
 
@@ -31,6 +31,8 @@ const saveArticle = async (articleData) => {
       headers: { Authorization: `Bearer ${token}` },
       body: articleData
     })
+    refreshNuxtData('articles-all')
+    refreshNuxtData('news-feed')
     router.push('/admin/articles')
   } catch (err) {
     alert('Ошибка при сохранении')

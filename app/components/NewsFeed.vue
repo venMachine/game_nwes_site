@@ -24,7 +24,11 @@ import 'dayjs/locale/ru';
 const config = useRuntimeConfig();
 
 const { data: newsFeed, pending } = await useFetch(
-  `${config.public.apiBaseUrl}/articles?published_to_news=true&limit=15`
+  `${config.public.apiBaseUrl}/articles?published_to_news=true&limit=15`,
+    {
+    key: 'news-feed',  // ← ключ для refreshNuxtData
+    dedupe: 'defer'
+  }
 );
 
 const formatDate = (dateString) => {

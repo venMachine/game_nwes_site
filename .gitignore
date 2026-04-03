@@ -22,3 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+
+
+public/yandex-news.xml
+public/news-sitemap.xml
