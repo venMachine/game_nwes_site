@@ -38,9 +38,9 @@ async function generateYandexNews() {
 
 
     writeFileSync(join(process.cwd(), 'public', 'yandex-news.xml'), xml);
-    console.log(`✅ RSS для Яндекс.Новостей создан: ${articles.length} статей`);
+    console.log(` RSS для Яндекс.Новостей создан: ${articles.length} статей`);
   } catch (err) {
-    console.error('❌ Ошибка:', err);
+    console.error(' Ошибка:', err);
   }
 }
 
