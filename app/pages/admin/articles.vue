@@ -6,8 +6,12 @@
     <div v-if="pending">Загрузка...</div>
     <div v-else-if="articles.length" class="articles-list">
       <div v-for="article in articles" :key="article.id" class="article-row">
-        <div class="article-info">
-          <h3>{{ article.title }}</h3>
+      <div class="article-info">
+          <h3>
+            {{ article.title }}
+            <span v-if="article.published_to_yandex" class="badge-yandex" title="Отправлено в Яндекс.Новости">Я</span>
+            <span v-if="article.published_to_google" class="badge-google" title="Отправлено в Google News">G</span>
+          </h3>
           <p>{{ article.excerpt }}</p>
           <small>ID: {{ article._id }} / Slug: {{ article.slug }}</small>
         </div>
@@ -217,5 +221,27 @@ button {
 
 .articles-list {
   background: transparent;
+}
+.badge-yandex, .badge-google {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.badge-yandex {
+  background: #fc3f1d;
+  color: white;
+}
+
+.badge-google {
+  background: #4285f4;
+  color: white;
 }
 </style>
