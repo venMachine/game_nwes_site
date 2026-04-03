@@ -4,7 +4,7 @@ const { generateYandexRss, generateGoogleSitemap } = require('../services/newsFe
 
 exports.getAllArticles = async (req, res) => {
   try {
-    const { limit = 10, category, published_to_news } = req.query;
+    const { limit = 30, category, published_to_news } = req.query;
     const filter = {};
     if (category && category !== 'all') filter['category.slug'] = category;
     if (published_to_news === 'true') {
