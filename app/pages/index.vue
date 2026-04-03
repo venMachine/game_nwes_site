@@ -21,9 +21,17 @@
       </button>
     </div>
 
-    <!-- Выделенная новость (Новость дня) -->
-    <div v-if="featuredArticle" class="featured-wrapper">
-      <ArticleCard :article="featuredArticle" featured />
+    <!-- ДВЕ КОЛОНКИ: Новость дня + Лента -->
+    <div class="two-columns">
+      <!-- Левая колонка: Новость дня -->
+      <div v-if="featuredArticle" class="featured-column">
+        <ArticleCard :article="featuredArticle" featured />
+      </div>
+
+      <!-- Правая колонка: Новостная лента (с прокруткой) -->
+      <aside class="sidebar">
+        <NewsFeed />
+      </aside>
     </div>
 
     <!-- Сетка остальных новостей -->
@@ -50,6 +58,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 import type { Article } from '~/components/ArticleCard.vue'
+import NewsFeed from '~/components/NewsFeed.vue'
 
 const categories = [
   { id: 0, name: 'Все', slug: 'all' },
@@ -62,10 +71,10 @@ const categories = [
 ]
 
 const activeCategory = ref('all')
-const visibleCount = ref(12)
+const visibleCount = ref(6)
 
-const { data: articles, pending,  refresh } = await useFetch<Article[]>(
-  () => `${config.public.apiBaseUrl}/articles?limit=100&category=${activeCategory.value}`
+const { data: articles, pending } = await useFetch<Article[]>(
+  () => `${config.public.apiBaseUrl}/articles?limit=50&category=${activeCategory.value}`
 )
 
 const sortedArticles = computed(() => {
@@ -76,22 +85,19 @@ const sortedArticles = computed(() => {
 })
 
 const featuredArticle = computed(() => sortedArticles.value.find(a => a.isFeatured))
-const otherArticles = computed(() => sortedArticles.value.filter(a => a !== featuredArticle.value))
+const otherArticles = computed(() => sortedArticles.value.filter(a => !a.isFeatured))
 const otherArticlesLimited = computed(() => otherArticles.value.slice(0, visibleCount.value))
 const hasMore = computed(() => visibleCount.value < otherArticles.value.length)
 
 const filterByCategory = (slug: string) => {
   activeCategory.value = slug
-  visibleCount.value = 12
-    refresh() 
+  visibleCount.value = 6
 }
 
 const loadMore = () => {
-  visibleCount.value += 6
+  visibleCount.value += 3
 }
-onMounted(() => {
-  refresh()
-})
+
 useSeoMeta({
   title: 'BarracudaGame - Главная страница',
   description: 'Самые свежие новости из мира видеоигр, киберспорта и гейминга',
@@ -116,18 +122,20 @@ useSeoMeta({
       rgba(15, 25, 35, 0.95) 0%,
       rgba(255, 70, 85, 0.2) 100%
     ),
-    url('https://res.cloudinary.com/dztn4jtdc/image/upload/v1775146102/photo-1511512578047-dfb367046420_c84nu2.avif');
+    url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');
   background-size: cover;
   background-position: center;
   border-radius: $border-radius-lg;
-  padding: 1rem 2rem;
+  padding: 4rem 2rem;
   margin-bottom: 2rem;
   text-align: center;
+  border: 1px solid #101A23;
 }
 
 .hero__title {
   font-size: 3rem;
   color: white;
+  margin-bottom: 1rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   word-break: break-word;
   hyphens: auto;
@@ -152,7 +160,7 @@ useSeoMeta({
 }
 
 .categories__btn {
-  background: rgba($primary, 0.1);
+  background: #101A23;
   border: 1px solid rgba($primary, 0.2);
   color: $text-primary;
   padding: 0.5rem 1.25rem;
@@ -162,7 +170,7 @@ useSeoMeta({
   cursor: pointer;
   transition: all 0.3s ease;
   &:hover {
-    background: rgba($primary, 0.2);
+   
     border-color: $primary;
   }
   &--active {
@@ -175,15 +183,57 @@ useSeoMeta({
   }
 }
 
-.featured-wrapper {
+/* ДВЕ КОЛОНКИ: Новость дня + Лента */
+.two-columns {
+  display: flex;
+  gap: 2rem;
   margin-bottom: 2rem;
-  width: 100%;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 }
+
+.featured-column {
+  flex: 2;
+  min-width: 0;
+}
+
+.sidebar {
+  flex: 1;
+  min-width: 280px;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba($primary, 0.1);
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary, 0.3);
+    border-radius: 3px;
+  }
+}
+
 
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .no-news {

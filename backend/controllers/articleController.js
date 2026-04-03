@@ -1,20 +1,23 @@
 const Article = require('../models/Article');
 const telegramService = require('../services/telegramService');
-
+const { generateYandexRss, generateGoogleSitemap } = require('../services/newsFeedsService');
 
 exports.getAllArticles = async (req, res) => {
   try {
-    const { limit = 50, category } = req.query;
-    const filter = category && category !== 'all' ? { 'category.slug': category } : {};
+    const { limit = 10, category, published_to_news } = req.query;
+    const filter = {};
+    if (category && category !== 'all') filter['category.slug'] = category;
+    if (published_to_news === 'true') {
+      filter.$or = [{ published_to_yandex: true }, { published_to_google: true }];
+    }
     const articles = await Article.find(filter)
-      .sort({ createdAt: -1 })  // ← новые сначала
+      .sort({ publishedAt: -1, createdAt: -1 })
       .limit(parseInt(limit));
     res.json(articles);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 exports.getArticleBySlug = async (req, res) => {
   try {
@@ -55,6 +58,8 @@ exports.createArticle = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+  await generateYandexRss(await Article.find({ publishedAt: { $ne: null } }).sort({ publishedAt: -1 }).limit(100));
+  await generateGoogleSitemap(await Article.find({ publishedAt: { $ne: null } }).sort({ publishedAt: -1 }).limit(1000));
 };
 
 
@@ -111,3 +116,45 @@ exports.searchArticles = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
   };
+
+  exports.publishToYandex = async (req, res) => {
+  try {
+    const { slug } = req.body;
+    const article = await Article.findOneAndUpdate(
+      { slug },
+      { published_to_yandex: true },
+      { new: true }
+    );
+    if (!article) return res.status(404).json({ error: 'Статья не найдена' });
+    
+   
+    const { generateYandexRss } = require('../services/newsFeedsService');
+    const articles = await Article.find({ published_to_yandex: true }).sort({ createdAt: -1 }).limit(50);
+    await generateYandexRss(articles);
+    
+    res.json({ message: 'Статья отправлена в Яндекс.Новости' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.publishToGoogle = async (req, res) => {
+  try {
+    const { slug } = req.body;
+    const article = await Article.findOneAndUpdate(
+      { slug },
+      { published_to_google: true },
+      { new: true }
+    );
+    if (!article) return res.status(404).json({ error: 'Статья не найдена' });
+    
+
+    const { generateGoogleSitemap } = require('../services/newsFeedsService');
+    const articles = await Article.find({ published_to_google: true }).sort({ createdAt: -1 }).limit(50);
+    await generateGoogleSitemap(articles);
+    
+    res.json({ message: 'Статья отправлена в Google News' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

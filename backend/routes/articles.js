@@ -10,5 +10,6 @@ router.get('/:slug', articleController.getArticleBySlug);
 router.post('/', protect, articleController.createArticle); 
 router.put('/:slug', protect, articleController.updateArticle);
 router.delete('/:slug', protect, articleController.deleteArticle);
-
+router.post('/publish-yandex', protect, articleController.publishToYandex);
+router.post('/publish-google', protect, articleController.publishToGoogle);
 module.exports = router;

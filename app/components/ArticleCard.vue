@@ -21,12 +21,12 @@
             {{ article.category?.name || 'Игры' }}
           </span>
 
-          <!-- Звёздочка только у рекомендованных новостей (кроме главной) -->
+          
           <span v-if="article.isFeatured && !featured" class="article-card__featured">
             ⭐
           </span>
 
-          <!-- Бейдж "Новость дня" только для featured пропса -->
+         
           <span v-if="featured" class="article-card__badge">
             🌟 Новость дня
           </span>

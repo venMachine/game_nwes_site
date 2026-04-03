@@ -161,7 +161,6 @@ useHead({
 <style scoped lang="scss">
 @use '~/assets/scss/variables' as *;
 @use '~/assets/scss/mixins' as *;
-
 .article-page {
   max-width: 800px;
   margin: 0 auto;
@@ -452,6 +451,17 @@ useHead({
     h3 {
       font-size: 1.2rem;
     }
+  }
+}
+.article-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #101A23;  /* Новый фон */
+  border-radius: $border-radius-lg;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 }
 </style>

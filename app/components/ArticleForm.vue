@@ -118,13 +118,23 @@
         <div class="pexels-credit">© {{ img.photographer }}</div>
       </div>
     </div>
-
+    
     
     <div v-if="localData.image" class="image-preview">
       <p>Выбранное изображение:</p>
       <img :src="localData.image" class="preview-img" />
     </div>
   </div>
+  <div class="form-group">
+      <label>Текст для Яндекс.Новостей (сухой, фактологичный)</label>
+      <textarea v-model="localData.yandex_news" rows="4" placeholder="Автоматически заполнится при генерации"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Текст для Google News (сухой, фактологичный)</label>
+      <textarea v-model="localData.google_news" rows="4" placeholder="Автоматически заполнится при генерации"></textarea>
+    </div>
+
     <button type="submit" :disabled="saving">
       {{ saving ? 'Сохранение...' : 'Сохранить' }}
     </button>
@@ -212,6 +222,8 @@ const generateNews = async () => {
         tagsInput.value = tagsArray.join(', ');
       }
     }
+    if (response.yandex_news) localData.value.yandex_news = response.yandex_news;
+    if (response.google_news) localData.value.google_news = response.google_news;
 
   } catch (err) {
     alert('Ошибка при генерации новости');

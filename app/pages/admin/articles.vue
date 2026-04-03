@@ -14,6 +14,22 @@
         <div class="article-actions">
           <NuxtLink :to="`/admin/${article.slug}`" class="btn-edit">✏️</NuxtLink>
           <button @click="deleteArticle(article.slug)" class="btn-delete">🗑️</button>
+           <button 
+            @click="publishToYandex(article.slug)" 
+            class="btn-yandex" 
+            title="Отправить в Яндекс.Новости"
+            :disabled="publishing === article.slug"
+          >
+            {{ publishing === article.slug ? 'Отправка...' : ' Яндекс' }}
+          </button>
+          <button 
+            @click="publishToGoogle(article.slug)" 
+            class="btn-google" 
+            title="Отправить в Google News"
+            :disabled="publishing === article.slug"
+          >
+            {{ publishing === article.slug ? 'Отправка...' : ' Google' }}
+          </button>
         </div>
       </div>
     </div>
@@ -25,6 +41,7 @@
 definePageMeta({ middleware: 'auth' })
 
 const config = useRuntimeConfig()
+const publishing = ref(null)
 const { data: articles, pending, refresh } = await useFetch(`${config.public.apiBaseUrl}/articles`)
 
 const deleteArticle = async (slug) => {
@@ -38,6 +55,41 @@ const deleteArticle = async (slug) => {
     refresh()
   } catch (err) {
     alert('Ошибка при удалении')
+  }
+}
+const publishToYandex = async (slug) => {
+  publishing.value = slug
+  try {
+    const token = localStorage.getItem('token')  
+    await $fetch(`${config.public.apiBaseUrl}/articles/publish-yandex`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: { slug }
+    })
+    alert(`Статья "${slug}" отправлена в Яндекс.Новости`)
+  } catch (err) {
+    alert('Ошибка при отправке в Яндекс.Новости')
+    console.error(err)
+  } finally {
+    publishing.value = null
+  }
+}
+
+const publishToGoogle = async (slug) => {
+  publishing.value = slug
+  try {
+    const token = localStorage.getItem('token')   
+    await $fetch(`${config.public.apiBaseUrl}/articles/publish-google`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: { slug }
+    })
+    alert(`Статья "${slug}" отправлена в Google News`)
+  } catch (err) {
+    alert('Ошибка при отправке в Google News')
+    console.error(err)
+  } finally {
+    publishing.value = null
   }
 }
 </script>
@@ -119,5 +171,51 @@ button {
     opacity: 0.5;
     cursor: not-allowed;
   }
+}
+.btn-yandex, .btn-google {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-yandex {
+  color: #fc3f1d;
+}
+.btn-yandex:hover:not(:disabled) {
+  background: rgba(252, 63, 29, 0.1);
+}
+
+.btn-google {
+  color: #4285f4;
+}
+.btn-google:hover:not(:disabled) {
+  background: rgba(66, 133, 244, 0.1);
+}
+
+.btn-yandex:disabled, .btn-google:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-articles {
+  background: #101A23;
+  min-height: 100vh;
+  padding: 2rem;
+  border-radius: $border-radius-lg;
+}
+
+
+.article-row {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: $border-radius;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.articles-list {
+  background: transparent;
 }
 </style>

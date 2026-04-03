@@ -1,6 +1,6 @@
 <template>
   <div class="category-page">
-    <AdBanner />
+  
     <h1 class="page-title">Игры и консоли</h1>
 
     <div v-if="!pending && articles.length" class="news-grid">

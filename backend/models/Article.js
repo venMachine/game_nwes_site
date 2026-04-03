@@ -5,6 +5,8 @@ const articleSchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true, lowercase: true },
   excerpt: { type: String, required: true },
   content: { type: String, required: true },
+  published_to_yandex: { type: Boolean, default: false },
+  published_to_google: { type: Boolean, default: false },
   image: { type: String, default: 'https://images.unsplash.com/photo-1511512578047-dfb367046420' },
   category: {
     id: Number,
