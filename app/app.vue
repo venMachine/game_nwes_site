@@ -6,6 +6,7 @@
         <div class="header__inner">
           
           <div class="logo">
+
             <NuxtLink to="/" class="logo__link">
               <NuxtImg 
                 src="/logo-B.png" 
@@ -107,24 +108,14 @@
 </template>
 
 <script setup lang="ts">
-  useHead({
+  import { ref } from 'vue'
+useHead({
   script: [
+    // Google Analytics с defer
     {
-      innerHTML: `
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108322152', 'ym');
-
-        ym(108322152, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-      `,
-      type: 'text/javascript'
-    },
-     {
       src: 'https://www.googletagmanager.com/gtag/js?id=G-G66TBEFS9H',
-      async: true
+      async: true,
+      defer: true
     },
     {
       innerHTML: `
@@ -134,10 +125,36 @@
         gtag('config', 'G-G66TBEFS9H');
       `,
       type: 'text/javascript'
+    },
+    // Яндекс.Метрика (загрузка без инициализации)
+    {
+      innerHTML: `
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108322152', 'ym');
+      `,
+      type: 'text/javascript'
     }
   ]
 })
-import { ref } from 'vue'
+
+// Отложенная инициализация Метрики
+onMounted(() => {
+  setTimeout(() => {
+    if (typeof ym !== 'undefined') {
+      ym(108322152, 'init', {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true
+      });
+    }
+  }, 1000);
+});
+
 
 const config = useRuntimeConfig()
 const menuOpen = ref(false)
