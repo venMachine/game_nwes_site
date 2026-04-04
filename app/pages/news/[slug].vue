@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Article } from '~/components/ArticleCard.vue'
 import dayjs from 'dayjs'
@@ -80,11 +80,19 @@ const config = useRuntimeConfig()
 const route = useRoute()
 
 
-const { data: article, pending } = await useFetch<Article>(
-  () => `${config.public.apiBaseUrl}/articles/${route.params.slug}`
+const slug = route.params.slug as string
+if (!slug) {
+  throw createError({ statusCode: 404, statusMessage: 'Страница не найдена' })
+}
+
+const { data: article, pending, error } = await useFetch<Article>(
+  () => `${config.public.apiBaseUrl}/articles/${slug}`
 )
 
-console.log(article)
+if (error.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Статья не найдена' })
+}
+
 const formatDate = (dateString: string) => {
   const date = dayjs(dateString)
   dayjs.locale('ru')
@@ -93,22 +101,21 @@ const formatDate = (dateString: string) => {
   return date.format('D MMMM YYYY')
 }
 
-
 const formatViews = (views: number) => {
   if (views >= 1000000) return (views / 1000000).toFixed(1) + 'M'
   if (views >= 1000) return (views / 1000).toFixed(1) + 'K'
   return views.toString()
 }
 
-
 const shareUrl = computed(() => `${config.public.siteUrl}/news/${article.value?.slug}`)
 
 const { data: related } = await useFetch(
   () => `${config.public.apiBaseUrl}/articles?category=${article.value?.category?.slug || ''}&limit=4`
 )
+
 const relatedArticles = computed(() => {
   if (!related.value) return []
-  return related.value.filter(a => a.slug !== route.params.slug).slice(0, 3)
+  return related.value.filter((a: Article) => a.slug !== slug).slice(0, 3)
 })
 
 useSeoMeta({
@@ -119,17 +126,14 @@ useSeoMeta({
   ogImage: () => article.value?.image,
   ogUrl: () => shareUrl.value
 })
+
 useHead({
   link: [
     {
       rel: 'canonical',
       href: shareUrl.value
     }
-  ]
-})
-
-
-useHead({
+  ],
   script: [
     {
       type: 'application/ld+json',
