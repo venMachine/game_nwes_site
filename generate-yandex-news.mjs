@@ -1,10 +1,16 @@
 import { writeFileSync } from 'fs';
-import { join } from 'path';
 
 async function generateYandexNews() {
   try {
-    const res = await fetch('https://barracudagame.ru/api/articles?published_to_yandex=true&limit=20');
-    const articles = await res.json();
+
+    const res = await fetch('https://barracudagame.ru/api/articles?published_to_yandex=true&limit=100');
+    const data = await res.json();
+    const articles = data.data || []; 
+    
+    if (!articles.length) {
+      console.log(' Нет статей для Яндекс.Новостей');
+      return;
+    }
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<rss version="2.0" xmlns:yandex="http://news.yandex.ru">\n';
@@ -33,11 +39,10 @@ async function generateYandexNews() {
     xml += '</channel>\n';
     xml += '</rss>';
 
-    // ИСПРАВЛЕННЫЙ ПУТЬ
     writeFileSync('/var/www/game_nwes_site/public/yandex-news.xml', xml);
-    console.log(`✅ RSS для Яндекс.Новостей создан: ${articles.length} статей`);
+    console.log(` RSS для Яндекс.Новостей создан: ${articles.length} статей`);
   } catch (err) {
-    console.error('❌ Ошибка:', err);
+    console.error(' Ошибка:', err);
   }
 }
 

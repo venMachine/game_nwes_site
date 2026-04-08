@@ -1,10 +1,15 @@
 import { writeFileSync } from 'fs';
-import { join } from 'path';
 
 async function generateNewsSitemap() {
   try {
     const res = await fetch('https://barracudagame.ru/api/articles?published_to_google=true&limit=1000');
-    const articles = await res.json();
+    const data = await res.json();
+    const articles = data.data || [];
+
+    if (!articles.length) {
+      console.log('⚠ Нет статей для Google News');
+      return;
+    }
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
@@ -30,11 +35,10 @@ async function generateNewsSitemap() {
 
     xml += '</urlset>';
 
-    // ИСПРАВЛЕННЫЙ ПУТЬ (абсолютный)
     writeFileSync('/var/www/game_nwes_site/public/news-sitemap.xml', xml);
-    console.log(`✅ News Sitemap для Google создан: ${articles.length} статей`);
+    console.log(` News Sitemap для Google создан: ${articles.length} статей`);
   } catch (err) {
-    console.error('❌ Ошибка:', err);
+    console.error(' Ошибка:', err);
   }
 }
 
