@@ -21,20 +21,19 @@
       </button>
     </div>
 
-    <!-- ДВЕ КОЛОНКИ: Новость дня + Лента -->
+    
     <div class="two-columns">
-      <!-- Левая колонка: Новость дня -->
+  
       <div v-if="featuredArticle" class="featured-column">
         <ArticleCard :article="featuredArticle" featured />
       </div>
 
-      <!-- Правая колонка: Новостная лента (с прокруткой) -->
+  
       <aside class="sidebar">
         <NewsFeed />
       </aside>
     </div>
 
-    <!-- Сетка остальных новостей -->
     <div v-if="otherArticlesLimited.length" class="news-grid">
       <ArticleCard
         v-for="article in otherArticlesLimited"
@@ -48,15 +47,15 @@
     <div v-if="pending" class="loading">Загрузка...</div>
 
     <div v-if="hasMore" class="load-more">
-      <button @click="loadMore" class="load-more__btn">
-        Показать ещё
+      <button @click="loadMore" :disabled="loadingMore" class="load-more__btn">
+        {{ loadingMore ? 'Загрузка...' : 'Показать ещё' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import type { Article } from '~/components/ArticleCard.vue'
 import NewsFeed from '~/components/NewsFeed.vue'
 
@@ -74,6 +73,7 @@ const categories = [
 
 const activeCategory = ref('all')
 const visibleCount = ref(6)
+const loadingMore = ref(false)
 
 const { data: articles, pending } = await useFetch<Article[]>(
   () => `${config.public.apiBaseUrl}/articles?limit=1000&category=${activeCategory.value}`
@@ -86,10 +86,8 @@ const sortedArticles = computed(() => {
   )
 })
 
-// Текущая новость дня
 const featuredArticle = computed(() => sortedArticles.value.find(a => a.isFeatured === true))
 
-// Все остальные статьи (включая старые новости дня)
 const otherArticles = computed(() => {
   return sortedArticles.value
 })
@@ -102,8 +100,11 @@ const filterByCategory = (slug: string) => {
   visibleCount.value = 6
 }
 
-const loadMore = () => {
+const loadMore = async () => {
+  loadingMore.value = true
   visibleCount.value += 3
+  await nextTick()
+  loadingMore.value = false
 }
 
 useSeoMeta({
@@ -130,7 +131,7 @@ useSeoMeta({
       rgba(15, 25, 35, 0.95) 0%,
       rgba(255, 70, 85, 0.2) 100%
     ),
-    url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');
+    url('https://res.cloudinary.com/dztn4jtdc/image/upload/v1775146102/photo-1511512578047-dfb367046420_c84nu2.avif');
   background-size: cover;
   background-position: center;
   border-radius: $border-radius-lg;
