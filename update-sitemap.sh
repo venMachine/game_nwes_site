@@ -2,7 +2,7 @@
 cd /var/www/game_nwes_site/public
 
 # Получаем список slug статей
-curl -s https://barracudagame.ru/api/articles | jq -r '.[].slug' > slugs.txt
+curl -s https://barracudagame.ru/api/articles/sitemap | jq -r '.[].slug' > slugs.txt
 
 # Создаём sitemap с нуля
 cat > sitemap.xml << 'XML'
@@ -20,10 +20,21 @@ XML
 
 # Добавляем статьи
 while read slug; do
-  echo "  <url><loc>https://barracudagame.ru/news/$slug</loc></url>" >> sitemap.xml
+  echo "  <url><loc>https://barracudagame.ru/news/$slug</loc></url>" >> sitemap>
 done < slugs.txt
 
 # Закрываем тег
 echo '</urlset>' >> sitemap.xml
 
 echo "✅ Sitemap обновлён: $(grep -c 'news/' sitemap.xml) статей"
+# Генерация RSS для Яндекс.Новостей
+echo "🔄 Генерация RSS для Яндекс.Новостей..."
+node /var/www/game_nwes_site/generate-yandex-news.mjs
+
+# Генерация News Sitemap для Google
+echo "🔄 Генерация News Sitemap для Google..."
+node /var/www/game_nwes_site/generate-news-sitemap.mjs
+
+echo "✅ Все карты обновлены"
+
+

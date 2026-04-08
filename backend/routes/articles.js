@@ -12,4 +12,5 @@ router.put('/:slug', protect, articleController.updateArticle);
 router.delete('/:slug', protect, articleController.deleteArticle);
 router.post('/publish-yandex', protect, articleController.publishToYandex);
 router.post('/publish-google', protect, articleController.publishToGoogle);
+router.get('/sitemap', articleController.getAllArticlesForSitemap);
 module.exports = router;

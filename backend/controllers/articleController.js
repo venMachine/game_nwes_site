@@ -158,3 +158,12 @@ exports.publishToGoogle = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getAllArticlesForSitemap = async (req, res) => {
+  try {
+    const articles = await Article.find({})
+      .sort({ publishedAt: -1, createdAt: -1 });
+    res.json(articles);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

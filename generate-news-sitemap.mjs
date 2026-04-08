@@ -3,7 +3,6 @@ import { join } from 'path';
 
 async function generateNewsSitemap() {
   try {
-    // Используем реальный адрес сайта, как в яндекс-скрипте
     const res = await fetch('https://barracudagame.ru/api/articles?published_to_google=true&limit=1000');
     const articles = await res.json();
 
@@ -31,7 +30,8 @@ async function generateNewsSitemap() {
 
     xml += '</urlset>';
 
-    writeFileSync(join(process.cwd(), 'public', 'news-sitemap.xml'), xml);
+    // ИСПРАВЛЕННЫЙ ПУТЬ (абсолютный)
+    writeFileSync('/var/www/game_nwes_site/public/news-sitemap.xml', xml);
     console.log(`✅ News Sitemap для Google создан: ${articles.length} статей`);
   } catch (err) {
     console.error('❌ Ошибка:', err);

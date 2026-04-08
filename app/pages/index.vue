@@ -56,9 +56,11 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig()
+import { ref, computed } from 'vue'
 import type { Article } from '~/components/ArticleCard.vue'
 import NewsFeed from '~/components/NewsFeed.vue'
+
+const config = useRuntimeConfig()
 
 const categories = [
   { id: 0, name: 'Все', slug: 'all' },
@@ -74,7 +76,7 @@ const activeCategory = ref('all')
 const visibleCount = ref(6)
 
 const { data: articles, pending } = await useFetch<Article[]>(
-  () => `${config.public.apiBaseUrl}/articles?limit=50&category=${activeCategory.value}`
+  () => `${config.public.apiBaseUrl}/articles?limit=1000&category=${activeCategory.value}`
 )
 
 const sortedArticles = computed(() => {
@@ -84,10 +86,16 @@ const sortedArticles = computed(() => {
   )
 })
 
-const featuredArticle = computed(() => sortedArticles.value.find(a => a.isFeatured))
-const otherArticles = computed(() => sortedArticles.value.filter(a => !a.isFeatured))
+// Текущая новость дня
+const featuredArticle = computed(() => sortedArticles.value.find(a => a.isFeatured === true))
+
+// Все остальные статьи (включая старые новости дня)
+const otherArticles = computed(() => {
+  return sortedArticles.value
+})
+
 const otherArticlesLimited = computed(() => otherArticles.value.slice(0, visibleCount.value))
-const hasMore = computed(() => visibleCount.value < otherArticles.value.length)
+const hasMore = computed(() => otherArticles.value.length > visibleCount.value)
 
 const filterByCategory = (slug: string) => {
   activeCategory.value = slug
