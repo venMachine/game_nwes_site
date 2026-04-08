@@ -2,7 +2,6 @@
   <div class="search-page">
     <h1 class="search-page__title">Поиск новостей</h1>
 
-    
     <div class="search-form">
       <input
         v-model="query"
@@ -16,16 +15,15 @@
       </button>
     </div>
 
-    
     <div v-if="loading" class="search-loading">
       <p>Загрузка...</p>
     </div>
 
-    <div v-else-if="results.length" class="search-results">
-      <h2 class="search-results__title">Найдено статей: {{ results.length }}</h2>
+    <div v-else-if="allResults.length" class="search-results">
+      <h2 class="search-results__title">Найдено статей: {{ allResults.length }}</h2>
       <div class="search-results__grid">
         <ArticleCard
-          v-for="article in results"
+          v-for="article in displayedResults"
           :key="article.id"
           :article="article"
         />
@@ -35,77 +33,64 @@
     <div v-else-if="query && !loading" class="search-no-results">
       <p>По запросу «{{ query }}» ничего не найдено.</p>
     </div>
+
+    <div v-if="hasMore && allResults.length" class="load-more">
+      <button @click="loadMore" :disabled="loading" class="load-more__btn">
+        {{ loading ? 'Загрузка...' : 'Показать ещё' }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig();
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-//import articlesData from '~/mock/articles.json'
 import type { Article } from '~/components/ArticleCard.vue'
 
+const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
-
 const query = ref('')
-const results = ref<Article[]>([])
+const allResults = ref<Article[]>([])
 const loading = ref(false)
-
-
-onMounted(() => {
-  if (route.query.q) {
-    query.value = route.query.q as string
-    performSearch() 
-  }
-})
-
+const visibleCount = ref(12)
 
 const performSearch = async () => {
   const trimmed = query.value.trim()
   
-
   if (!trimmed) {
-    results.value = []
+    allResults.value = []
     router.replace({ query: {} })
     return
   }
 
-  
   router.replace({ query: { q: trimmed } })
-
   loading.value = true
+  visibleCount.value = 12
 
-    try {
-    const { data } = await useFetch<Article[]>(
+  try {
+    const data = await $fetch<Article[]>(
       `${config.public.apiBaseUrl}/articles/search?q=${encodeURIComponent(trimmed)}`
     )
-    results.value = data.value || []
-     // const searchTerm = trimmed.toLowerCase()
-  // results.value.filter(article => {
-  //   return (
-  //     article.title.toLowerCase().includes(searchTerm) ||
-  //     article.excerpt.toLowerCase().includes(searchTerm) ||
-  //     article.tags?.some(tag => tag.toLowerCase().includes(searchTerm))
-  //   )
-  // })
-
+    allResults.value = data || []
   } catch (err) {
     console.error('Ошибка поиска:', err)
-    results.value = []
+    allResults.value = []
   } finally {
     loading.value = false
   }
-
-
-
-
 }
 
+const displayedResults = computed(() => allResults.value.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < allResults.value.length)
 
-const debounce = (fn, delay) => {
-  let timeout
+const loadMore = () => {
+  visibleCount.value += 6
+}
+
+const debounce = (fn: Function, delay: number) => {
+  let timeout: NodeJS.Timeout
   return () => {
     clearTimeout(timeout)
     timeout = setTimeout(() => fn(), delay)
@@ -116,6 +101,13 @@ const debouncedSearch = debounce(performSearch, 300)
 
 watch(query, () => {
   debouncedSearch()
+})
+
+onMounted(() => {
+  if (route.query.q) {
+    query.value = route.query.q as string
+    performSearch()
+  }
 })
 </script>
 
@@ -183,14 +175,16 @@ watch(query, () => {
 }
 
 .search-results__grid {
-  @include grid(3, 1.5rem);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 
-  @include media('lg') {
-    @include grid(2, 1rem);
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  @include media('sm') {
-    @include grid(1, 1rem);
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -202,6 +196,28 @@ watch(query, () => {
   border-radius: $border-radius;
   border: 1px dashed rgba($primary, 0.2);
 }
+
+.load-more {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.load-more__btn {
+  background: transparent;
+  border: 2px solid $primary;
+  color: $primary;
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    background: $primary;
+    color: white;
+  }
+}
+
 @media (max-width: 768px) {
   .search-page {
     padding: 1rem;
@@ -225,11 +241,11 @@ watch(query, () => {
   .search-form__btn {
     border-radius: $border-radius;
     width: 100%;
+    height: 2rem;
   }
 
-  .news-grid {
-    grid-template-columns: 1fr; /* одна колонка на телефонах */
-    gap: 1rem;
+  .search-results__grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -111,7 +111,7 @@
   import { ref } from 'vue'
 useHead({
   script: [
-    // Google Analytics с defer
+   
     {
       src: 'https://www.googletagmanager.com/gtag/js?id=G-G66TBEFS9H',
       async: true,
@@ -126,7 +126,7 @@ useHead({
       `,
       type: 'text/javascript'
     },
-    // Яндекс.Метрика (загрузка без инициализации)
+    
     {
       innerHTML: `
         (function(m,e,t,r,i,k,a){
@@ -141,7 +141,7 @@ useHead({
   ]
 })
 
-// Отложенная инициализация Метрики
+
 onMounted(() => {
   setTimeout(() => {
     if (typeof ym !== 'undefined') {

@@ -21,41 +21,37 @@
       </button>
     </div>
 
-    
     <div class="two-columns">
-  
       <div v-if="featuredArticle" class="featured-column">
         <ArticleCard :article="featuredArticle" featured />
       </div>
-
-  
       <aside class="sidebar">
         <NewsFeed />
       </aside>
     </div>
 
-    <div v-if="otherArticlesLimited.length" class="news-grid">
+    <div v-if="articlesToShow.length" class="news-grid">
       <ArticleCard
-        v-for="article in otherArticlesLimited"
+        v-for="article in articlesToShow"
         :key="article.id"
         :article="article"
       />
     </div>
-    <div v-else-if="!pending && !featuredArticle && !otherArticlesLimited.length" class="no-news">
+    <div v-else-if="!loading" class="no-news">
       <p>Новостей пока нет. Скоро добавим!</p>
     </div>
-    <div v-if="pending" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">Загрузка...</div>
 
     <div v-if="hasMore" class="load-more">
-      <button @click="loadMore" :disabled="loadingMore" class="load-more__btn">
-        {{ loadingMore ? 'Загрузка...' : 'Показать ещё' }}
+      <button @click="loadMore" :disabled="loading" class="load-more__btn">
+        {{ loading ? 'Загрузка...' : 'Показать ещё' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { Article } from '~/components/ArticleCard.vue'
 import NewsFeed from '~/components/NewsFeed.vue'
 
@@ -72,40 +68,73 @@ const categories = [
 ]
 
 const activeCategory = ref('all')
-const visibleCount = ref(6)
-const loadingMore = ref(false)
+const currentPage = ref(1)
+const limit = 12
+const allArticles = ref<Article[]>([])
+const totalPages = ref(1)
+const loading = ref(false)
 
-const { data: articles, pending } = await useFetch<Article[]>(
+
+const { data: allData } = await useFetch<{ data: Article[] }>(
   () => `${config.public.apiBaseUrl}/articles?limit=1000&category=${activeCategory.value}`
 )
 
-const sortedArticles = computed(() => {
-  if (!articles.value) return []
-  return [...articles.value].sort((a, b) => 
+const allArticlesForFeatured = computed(() => {
+  if (!allData.value?.data) return []
+  return [...allData.value.data].sort((a, b) => 
     new Date(b.publishedAt || b.createdAt) - new Date(a.publishedAt || a.createdAt)
   )
 })
 
-const featuredArticle = computed(() => sortedArticles.value.find(a => a.isFeatured === true))
+const featuredArticle = computed(() => allArticlesForFeatured.value.find(a => a.isFeatured === true))
 
-const otherArticles = computed(() => {
-  return sortedArticles.value
-})
 
-const otherArticlesLimited = computed(() => otherArticles.value.slice(0, visibleCount.value))
-const hasMore = computed(() => otherArticles.value.length > visibleCount.value)
+const loadArticles = async () => {
+  loading.value = true
+  try {
+    const res = await $fetch(`${config.public.apiBaseUrl}/articles`, {
+      params: {
+        page: currentPage.value,
+        limit: limit,
+        category: activeCategory.value
+      }
+    })
+    const newArticles = res.data || []
+    console.log('newArticles IDs:', newArticles.map(a => a.id))
+    console.log('featuredArticle.value?.id:', featuredArticle.value?.id)
+    
+  
+    const filtered = newArticles
+    
+    if (currentPage.value === 1) {
+      allArticles.value = filtered
+    } else {
+      allArticles.value = [...allArticles.value, ...filtered]
+    }
+    totalPages.value = res.totalPages || 1
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+const articlesToShow = computed(() => allArticles.value)
+const hasMore = computed(() => currentPage.value < totalPages.value)
+
+const loadMore = () => {
+  if (hasMore.value && !loading.value) {
+    currentPage.value++
+    loadArticles()
+  }
+}
 
 const filterByCategory = (slug: string) => {
   activeCategory.value = slug
-  visibleCount.value = 6
+  currentPage.value = 1
+  loadArticles()
 }
 
-const loadMore = async () => {
-  loadingMore.value = true
-  visibleCount.value += 3
-  await nextTick()
-  loadingMore.value = false
-}
+await loadArticles()
 
 useSeoMeta({
   title: 'BarracudaGame - Главная страница',
@@ -116,6 +145,9 @@ useSeoMeta({
   twitterCard: 'summary_large_image'
 })
 </script>
+
+
+
 
 <style scoped lang="scss">
 @use '~/assets/scss/variables' as *;
@@ -192,7 +224,7 @@ useSeoMeta({
   }
 }
 
-/* ДВЕ КОЛОНКИ: Новость дня + Лента */
+
 .two-columns {
   display: flex;
   gap: 2rem;

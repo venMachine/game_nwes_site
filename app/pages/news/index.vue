@@ -2,7 +2,6 @@
   <div class="news-list-page">
     <h1 class="page-title">Все новости</h1>
 
-    
     <div class="categories" v-if="categories.length">
       <button 
         v-for="cat in categories" 
@@ -15,31 +14,30 @@
       </button>
     </div>
 
-    
-    <div v-if="!pending && articles.length" class="news-grid">
+    <div v-if="!loading && articlesList.length" class="news-grid">
       <ArticleCard
-        v-for="article in articles"
+        v-for="article in articlesList"
         :key="article.id"
         :article="article"
       />
     </div>
-    <div v-else-if="pending" class="loading">Загрузка...</div>
+    <div v-else-if="loading" class="loading">Загрузка...</div>
     <div v-else class="no-news">Новостей пока нет</div>
 
-    
     <div v-if="hasMore" class="load-more">
-      <button @click="loadMore" class="load-more__btn">Показать ещё</button>
+      <button @click="loadMore" :disabled="loading" class="load-more__btn">
+        {{ loading ? 'Загрузка...' : 'Показать ещё' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-
 
 const categories = [
   { id: 0, name: 'Все', slug: 'all' },
@@ -52,34 +50,60 @@ const categories = [
 ]
 
 const activeCategory = ref(route.query.category || 'all')
-const visibleCount = ref(12)
-const page = ref(1)
+const currentPage = ref(1)
+const limit = 12
+const allArticles = ref([])
+const totalPages = ref(1)
+const loading = ref(false)
 
 
-const { data: articles, pending, refresh } = await useFetch(
-  () => `${config.public.apiBaseUrl}/articles?limit=50&category=${activeCategory.value}`
-)
+const loadArticles = async () => {
+  loading.value = true
+  try {
+    const res = await $fetch(`${config.public.apiBaseUrl}/articles`, {
+      params: {
+        page: currentPage.value,
+        limit: limit,
+        category: activeCategory.value
+      }
+    })
+    const newArticles = res.data || []
+    
+    if (currentPage.value === 1) {
+      allArticles.value = newArticles
+    } else {
+      allArticles.value = [...allArticles.value, ...newArticles]
+    }
+    totalPages.value = res.totalPages || 1
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
 
+const articlesList = computed(() => allArticles.value)
+const hasMore = computed(() => currentPage.value < totalPages.value)
 
-const filteredArticles = computed(() => {
-  if (!articles.value) return []
-  return articles.value.slice(0, visibleCount.value)
-})
-
-const hasMore = computed(() => 
-  articles.value ? visibleCount.value < articles.value.length : false
-)
+const loadMore = () => {
+  if (hasMore.value && !loading.value) {
+    currentPage.value++
+    loadArticles()
+  }
+}
 
 const filterByCategory = (slug) => {
   activeCategory.value = slug
-  visibleCount.value = 12
+  currentPage.value = 1
   router.replace({ query: { category: slug !== 'all' ? slug : undefined } })
-  refresh()
+  loadArticles()
 }
 
-const loadMore = () => {
-  visibleCount.value += 6
-}
+
+watch(activeCategory, () => {
+  currentPage.value = 1
+  loadArticles()
+}, { immediate: true })
 </script>
 
 <style scoped lang="scss">

@@ -18,6 +18,35 @@ exports.getAllArticles = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getAllArticles = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+    const { category, isFeatured, excludeFeatured } = req.query;
+    
+    const filter = {};
+    if (category && category !== 'all') filter['category.slug'] = category;
+    if (isFeatured === 'true') filter.isFeatured = true;
+    if (excludeFeatured === 'true') filter.isFeatured = { $ne: true };
+    
+    const articles = await Article.find(filter)
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    const total = await Article.countDocuments(filter);
+    
+    res.json({
+      data: articles,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 exports.getArticleBySlug = async (req, res) => {
   try {

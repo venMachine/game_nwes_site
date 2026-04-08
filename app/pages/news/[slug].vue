@@ -79,7 +79,6 @@ import 'dayjs/locale/ru'
 const config = useRuntimeConfig()
 const route = useRoute()
 
-
 const slug = route.params.slug as string
 if (!slug) {
   throw createError({ statusCode: 404, statusMessage: 'Страница не найдена' })
@@ -109,13 +108,17 @@ const formatViews = (views: number) => {
 
 const shareUrl = computed(() => `${config.public.siteUrl}/news/${article.value?.slug}`)
 
-const { data: related } = await useFetch(
+
+const { data: relatedResponse } = await useFetch(
   () => `${config.public.apiBaseUrl}/articles?category=${article.value?.category?.slug || ''}&limit=4`
 )
 
 const relatedArticles = computed(() => {
-  if (!related.value) return []
-  return related.value.filter((a: Article) => a.slug !== slug).slice(0, 3)
+  if (!relatedResponse.value) return []
+  const articles = Array.isArray(relatedResponse.value) 
+    ? relatedResponse.value 
+    : (relatedResponse.value?.data || [])
+  return articles.filter((a: Article) => a.slug !== slug).slice(0, 3)
 })
 
 useSeoMeta({
@@ -161,6 +164,8 @@ useHead({
   ]
 })
 </script>
+
+
 
 <style scoped lang="scss">
 @use '~/assets/scss/variables' as *;
@@ -448,7 +453,7 @@ useHead({
 
   @media (max-width: 768px) {
     .related-grid {
-      grid-template-columns: 1fr; /* одна колонка на мобильных */
+      grid-template-columns: 1fr; 
       gap: 0.75rem;
     }
 
@@ -461,7 +466,7 @@ useHead({
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  background: #101A23;  /* Новый фон */
+  background: #101A23;  
   border-radius: $border-radius-lg;
   
   @media (max-width: 768px) {

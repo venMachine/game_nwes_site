@@ -20,16 +20,19 @@
 <script setup>
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
+import { computed } from 'vue';
 
 const config = useRuntimeConfig();
 
-const { data: newsFeed, pending } = await useFetch(
+const { data: newsFeedResponse, pending } = await useFetch(
   `${config.public.apiBaseUrl}/articles?published_to_news=true&limit=15`,
-    {
-    key: 'news-feed',  // ← ключ для refreshNuxtData
+  {
+    key: 'news-feed',
     dedupe: 'defer'
   }
 );
+
+const newsFeed = computed(() => newsFeedResponse.value?.data || [])
 
 const formatDate = (dateString) => {
   const date = dayjs(dateString);
@@ -39,7 +42,6 @@ const formatDate = (dateString) => {
   return date.format('D MMMM YYYY');
 };
 </script>
-
 <style scoped lang="scss">
 @use '~/assets/scss/variables' as *;
 @use '~/assets/scss/mixins' as *;
