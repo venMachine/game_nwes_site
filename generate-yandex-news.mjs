@@ -3,11 +3,9 @@ import { join } from 'path';
 
 async function generateYandexNews() {
   try {
-
     const res = await fetch('https://barracudagame.ru/api/articles?published_to_yandex=true&limit=20');
     const articles = await res.json();
 
-   
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<rss version="2.0" xmlns:yandex="http://news.yandex.ru">\n';
     xml += '<channel>\n';
@@ -15,7 +13,6 @@ async function generateYandexNews() {
     xml += '  <link>https://barracudagame.ru</link>\n';
     xml += '  <description>Игровые новости, киберспорт, обзоры</description>\n';
     xml += '  <language>ru</language>\n';
-
 
     for (const article of articles) {
       const pubDate = new Date(article.publishedAt || article.createdAt).toUTCString();
@@ -36,11 +33,11 @@ async function generateYandexNews() {
     xml += '</channel>\n';
     xml += '</rss>';
 
-
-    writeFileSync(join(process.cwd(), 'public', 'yandex-news.xml'), xml);
-    console.log(` RSS для Яндекс.Новостей создан: ${articles.length} статей`);
+    // ИСПРАВЛЕННЫЙ ПУТЬ
+    writeFileSync('/var/www/game_nwes_site/public/yandex-news.xml', xml);
+    console.log(`✅ RSS для Яндекс.Новостей создан: ${articles.length} статей`);
   } catch (err) {
-    console.error(' Ошибка:', err);
+    console.error('❌ Ошибка:', err);
   }
 }
 
