@@ -18,7 +18,8 @@ exports.getAllArticles = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-exports.getAllArticles = async (req, res) => {
+
+exports.getAllArticlesPaginated = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -53,7 +54,6 @@ exports.getArticleBySlug = async (req, res) => {
     const article = await Article.findOne({ slug: req.params.slug });
     if (!article) return res.status(404).json({ error: 'Статья не найдена' });
     
-   
     article.views += 1;
     await article.save();
     
@@ -62,7 +62,6 @@ exports.getArticleBySlug = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 exports.createArticle = async (req, res) => {
   try {
@@ -75,22 +74,23 @@ exports.createArticle = async (req, res) => {
     const article = new Article(articleData);
     await article.save();
 
-  
     if (article.publishToTelegram !== false) {
-      
       telegramService.publishNews(article).catch(err => 
         console.error('Ошибка фоновой публикации в Telegram:', err)
       );
     }
 
+    // Обновляем RSS и sitemap после создания статьи
+    const yandexArticles = await Article.find({ published_to_yandex: true }).sort({ publishedAt: -1 }).limit(100);
+    const googleArticles = await Article.find({ published_to_google: true }).sort({ publishedAt: -1 }).limit(1000);
+    await generateYandexRss(yandexArticles);
+    await generateGoogleSitemap(googleArticles);
+
     res.status(201).json(article);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-  await generateYandexRss(await Article.find({ publishedAt: { $ne: null } }).sort({ publishedAt: -1 }).limit(100));
-  await generateGoogleSitemap(await Article.find({ publishedAt: { $ne: null } }).sort({ publishedAt: -1 }).limit(1000));
 };
-
 
 exports.updateArticle = async (req, res) => {
   try {
@@ -99,20 +99,20 @@ exports.updateArticle = async (req, res) => {
       req.body,
       { returnDocument: 'after', runValidators: true }
     );
-      
+    
+    if (!article) return res.status(404).json({ error: 'Статья не найдена' });
+    
     if (article.publishToTelegram !== false) {
-      
       telegramService.publishNews(article).catch(err => 
         console.error('Ошибка фоновой публикации в Telegram:', err)
       );
     }
-    if (!article) return res.status(404).json({ error: 'Статья не найдена' });
+    
     res.json(article);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
-
 
 exports.deleteArticle = async (req, res) => {
   try {
@@ -128,7 +128,7 @@ exports.searchArticles = async (req, res) => {
   try {
     const { q } = req.query;
     if (!q) {
-      return res.json([]); 
+      return res.json([]);
     }
 
     const articles = await Article.find({
@@ -144,21 +144,19 @@ exports.searchArticles = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-  };
+};
 
-  exports.publishToYandex = async (req, res) => {
+exports.publishToYandex = async (req, res) => {
   try {
     const { slug } = req.body;
     const article = await Article.findOneAndUpdate(
       { slug },
       { published_to_yandex: true },
-      { new: true }
+      { returnDocument: 'after' }  // ← ИСПРАВЛЕНО: new: true → returnDocument: 'after'
     );
     if (!article) return res.status(404).json({ error: 'Статья не найдена' });
     
-   
-    const { generateYandexRss } = require('../services/newsFeedsService');
-    const articles = await Article.find({ published_to_yandex: true }).sort({ createdAt: -1 }).limit(50);
+    const articles = await Article.find({ published_to_yandex: true }).sort({ createdAt: -1 }).limit(100);
     await generateYandexRss(articles);
     
     res.json({ message: 'Статья отправлена в Яндекс.Новости' });
@@ -173,13 +171,11 @@ exports.publishToGoogle = async (req, res) => {
     const article = await Article.findOneAndUpdate(
       { slug },
       { published_to_google: true },
-      { new: true }
+      { returnDocument: 'after' }  // ← ИСПРАВЛЕНО: new: true → returnDocument: 'after'
     );
     if (!article) return res.status(404).json({ error: 'Статья не найдена' });
     
-
-    const { generateGoogleSitemap } = require('../services/newsFeedsService');
-    const articles = await Article.find({ published_to_google: true }).sort({ createdAt: -1 }).limit(50);
+    const articles = await Article.find({ published_to_google: true }).sort({ createdAt: -1 }).limit(1000);
     await generateGoogleSitemap(articles);
     
     res.json({ message: 'Статья отправлена в Google News' });
@@ -187,6 +183,7 @@ exports.publishToGoogle = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 exports.getAllArticlesForSitemap = async (req, res) => {
   try {
     const articles = await Article.find({})
