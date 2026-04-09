@@ -1,14 +1,45 @@
 import { writeFileSync } from 'fs';
 
+
+function getYandexCategory(categorySlug) {
+
+  const mapping = {
+    'esports': 'Киберспорт',
+    'consoles': 'Консоли',        
+    'ratings': 'Рейтинги',             
+    'vr-ar': 'VR/AR',                
+    'indie': 'Инди-игры',             
+    'vr-ar': 'Тpc-games',          
+    'омпьютерные игры': 'Интернет'           
+  };
+  
+
+  if (mapping[categorySlug]) {
+    return mapping[categorySlug];
+  }
+  
+
+  return 'Игры';
+}
+
+function escapeXml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 async function generateYandexNews() {
   try {
-
     const res = await fetch('https://barracudagame.ru/api/articles?published_to_yandex=true&limit=100');
     const data = await res.json();
     const articles = data.data || []; 
     
     if (!articles.length) {
-      console.log(' Нет статей для Яндекс.Новостей');
+      console.log('Нет статей для Яндекс.Новостей');
       return;
     }
 
@@ -26,6 +57,7 @@ async function generateYandexNews() {
       const link = `https://barracudagame.ru/news/${article.slug}`;
       const description = escapeXml(article.yandex_news || article.excerpt || '');
       const fullText = escapeXml(article.yandex_news || article.content || '');
+      const category = getYandexCategory(article.category?.slug || '');
 
       xml += '  <item>\n';
       xml += `    <title>${title}</title>\n`;
@@ -33,6 +65,7 @@ async function generateYandexNews() {
       xml += `    <pubDate>${pubDate}</pubDate>\n`;
       xml += `    <description>${description}</description>\n`;
       xml += `    <yandex:full-text>${fullText}</yandex:full-text>\n`;
+      xml += `    <category>${category}</category>\n`;
       xml += '  </item>\n';
     }
 
@@ -40,20 +73,10 @@ async function generateYandexNews() {
     xml += '</rss>';
 
     writeFileSync('/var/www/game_nwes_site/public/yandex-news.xml', xml);
-    console.log(` RSS для Яндекс.Новостей создан: ${articles.length} статей`);
+    console.log(`RSS для Яндекс.Новостей создан: ${articles.length} статей`);
   } catch (err) {
-    console.error(' Ошибка:', err);
+    console.error('Ошибка:', err);
   }
-}
-
-function escapeXml(str) {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
 }
 
 generateYandexNews();
