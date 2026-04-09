@@ -1,5 +1,10 @@
 export default defineNuxtConfig({
-  // Модули Nuxt
+
+  compatibilityDate: '2026-04-09',
+  
+ 
+  srcDir: 'app/', 
+  
   modules: [
     '@nuxt/image',
     '@nuxt/scripts',
