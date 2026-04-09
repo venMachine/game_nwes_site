@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/image',
     '@nuxt/scripts',
+    '@nuxtjs/i18n',
    
    
   ],
@@ -35,6 +36,20 @@ plugins: [
       ]
     }
   },
+  i18n: {
+    locales: [
+      { code: 'ru', name: 'Русский', iso: 'ru-RU', file: 'ru.json' },
+      { code: 'en', name: 'English', iso: 'en-US', file: 'en.json' }
+    ],
+    defaultLocale: 'ru',
+    strategy: 'prefix_except_default', 
+    langDir: 'locales/',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root' 
+    }
+  } as any,
 
   
   image: {

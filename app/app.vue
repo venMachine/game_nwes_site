@@ -6,7 +6,6 @@
         <div class="header__inner">
           
           <div class="logo">
-
             <NuxtLink to="/" class="logo__link">
               <NuxtImg 
                 src="/logo-B.png" 
@@ -17,101 +16,120 @@
                 format="webp"
                 loading="eager"
               />
-              <span class="logo__text">BarracudaGame</span>
+              <span class="logo__text">{{ $t('site_name') }}</span>
             </NuxtLink>
           </div>
 
-          
           <button class="hamburger" @click="menuOpen = !menuOpen" :aria-label="menuOpen ? 'Закрыть меню' : 'Открыть меню'">
             <span class="hamburger__line" :class="{ 'hamburger__line--open': menuOpen }"></span>
             <span class="hamburger__line" :class="{ 'hamburger__line--open': menuOpen }"></span>
             <span class="hamburger__line" :class="{ 'hamburger__line--open': menuOpen }"></span>
           </button>
 
-          
           <nav class="nav" :class="{ 'nav--open': menuOpen }">
             <ul class="nav__list">
               <li class="nav__item">
                 <NuxtLink to="/" class="nav__link" active-class="nav__link--active" @click="menuOpen = false">
-                  Главная
+                  {{ $t('nav.home') }}
                 </NuxtLink>
               </li>
               <li class="nav__item">
                 <NuxtLink to="/news" class="nav__link" active-class="nav__link--active" @click="menuOpen = false">
-                  Новости
+                  {{ $t('nav.news') }}
                 </NuxtLink>
               </li>
               <li class="nav__item">
                 <NuxtLink to="/games" class="nav__link" active-class="nav__link--active" @click="menuOpen = false">
-                  Игры
+                  {{ $t('nav.games') }}
                 </NuxtLink>
               </li>
               <li class="nav__item">
                 <NuxtLink to="/esports" class="nav__link" active-class="nav__link--active" @click="menuOpen = false">
-                  Киберспорт
+                  {{ $t('nav.esports') }}
                 </NuxtLink>
               </li>
             </ul>
           </nav>
-          <a 
-            :href="config.public.telegramChannelUrl" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="telegram-link"
-            aria-label="Telegram канал"
-          >
-            <font-awesome-icon :icon="['fab', 'telegram']" />
-          </a>
-          
-          <div class="search">
-            <NuxtLink to="/search" class="search__btn">
+
+          <div class="header__actions">
+            
+            <div class="language-switcher">
+              <button 
+                v-for="locale in availableLocales" 
+                :key="locale.code"
+                @click="switchLocale(locale.code)"
+                :class="{ active: locale.code === currentLocale }"
+              >
+                {{ locale.name }}
+              </button>
+            </div>
+            <a 
+              :href="config.public.telegramChannelUrl" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="telegram-link"
+              aria-label="Telegram канал"
+            >
+              <font-awesome-icon :icon="['fab', 'telegram']" />
+            </a>
+            <div class="search">
+              <NuxtLink to="/search" class="search__btn">
                 <span class="search__icon">🔍</span>
-            </NuxtLink> 
+              </NuxtLink> 
+            </div>
           </div>
 
         </div>
       </div>
     </header>
-    <!-- <AdBanner /> -->
-    
+
     <main class="main">
       <div class="container">
         <NuxtPage />
       </div>
     </main>
-    <!-- <AdBanner /> -->
-  
+
     <footer class="footer">
       <div class="container">
         <div class="footer__inner">
           <div class="footer__info">
-            <h3 class="footer__title">BarracudaGame</h3>
-            <p class="footer__text">Самые свежие новости из мира видеоигр</p>
+            <h3 class="footer__title">{{ $t('site_name') }}</h3>
+            <p class="footer__text">{{ $t('site_description') }}</p>
           </div>
           <div class="footer__links">
-            <NuxtLink to="/about" class="footer__link">О нас</NuxtLink>
-            <NuxtLink to="/advertising" class="footer__link">Реклама</NuxtLink>
-            <NuxtLink to="/contacts" class="footer__link">Контакты</NuxtLink>
+            <NuxtLink to="/about" class="footer__link">{{ $t('footer.about') }}</NuxtLink>
+            <NuxtLink to="/advertising" class="footer__link">{{ $t('footer.advertising') }}</NuxtLink>
+            <NuxtLink to="/contacts" class="footer__link">{{ $t('footer.contacts') }}</NuxtLink>
           </div>
           <div class="footer__copyright">
-            <p>&copy; 2024 BarracudaGame. Все права защищены.</p>
-             <p>© Илья Говорухин </p>
-            <p class="footer__disclaimer">Все торговые марки принадлежат их правообладателям.</p>
+            <p>&copy; {{ new Date().getFullYear() }} {{ $t('site_name') }}. {{ $t('footer.copyright') }}</p>
+            <p>© Илья Говорухин</p>
+            <p class="footer__disclaimer">{{ $t('footer.disclaimer') || 'Все торговые марки принадлежат их правообладателям.' }}</p>
           </div>
         </div>
       </div>
     </footer>
 
-
-    
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale, locales, setLocale } = useI18n()
+const config = useRuntimeConfig()
+const menuOpen = ref(false)
+
+const currentLocale = computed(() => locale.value)
+const availableLocales = computed(() => locales.value.filter(i => i.code !== locale.value))
+
+const switchLocale = (code: string) => {
+  setLocale(code)
+}
+
 useHead({
   script: [
-   
     {
       src: 'https://www.googletagmanager.com/gtag/js?id=G-G66TBEFS9H',
       async: true,
@@ -126,7 +144,6 @@ useHead({
       `,
       type: 'text/javascript'
     },
-    
     {
       innerHTML: `
         (function(m,e,t,r,i,k,a){
@@ -141,7 +158,6 @@ useHead({
   ]
 })
 
-
 onMounted(() => {
   setTimeout(() => {
     if (typeof ym !== 'undefined') {
@@ -154,11 +170,6 @@ onMounted(() => {
     }
   }, 1000);
 });
-
-
-const config = useRuntimeConfig()
-const menuOpen = ref(false)
-refreshNuxtData() 
 </script>
 
 <style scoped lang="scss">
@@ -170,7 +181,6 @@ refreshNuxtData()
   display: flex;
   flex-direction: column;
 }
-
 
 .header {
   background-color: black;
@@ -185,9 +195,9 @@ refreshNuxtData()
 .header__inner {
   @include flex(row, space-between, center);
   position: relative;
+  flex-wrap: wrap;
 }
 
-/* Логотип */
 .logo__link {
   @include flex(row, flex-start, center);
   color: $primary;
@@ -210,7 +220,6 @@ refreshNuxtData()
     display: none; 
   }
 }
-
 
 .hamburger {
   display: none;
@@ -243,7 +252,6 @@ refreshNuxtData()
     }
   }
 }
-
 
 .nav {
   @include media('lg') {
@@ -280,32 +288,99 @@ refreshNuxtData()
   }
 }
 
-/* Поиск */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language-switcher {
+  display: flex;
+  gap: 0.25rem;
+  
+  button {
+    background: none;
+    border: 1px solid rgba($primary, 0.3);
+    color: $text-primary;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+    
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+    
+    &.active {
+      background: $primary;
+      color: white;
+      border-color: $primary;
+    }
+  }
+}
+
+.telegram-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba($primary, 0.1);
+  border-radius: 50%;
+  transition: background 0.3s;
+  color: $text-primary;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba($primary, 0.2);
+    color: $primary;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
 .search__btn {
   background: rgba($primary, 0.1);
   border: none;
   color: $text-primary;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
-  @include flex(row, center, center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.3s ease;
   text-decoration: none;
+  flex-shrink: 0;
   
   &:hover {
     background-color: rgba($primary, 0.2);
   }
 }
 
-
 @media (max-width: 768px) {
+  .header__inner {
+    flex-wrap: wrap;
+  }
+  
   .hamburger {
-    display: flex; 
+    display: flex;
+    order: 1;
     margin-left: auto;
     margin-right: 0.5rem;
   }
-
+  
+  .header__actions {
+    order: 2;
+    margin-left: 0;
+  }
+  
   .nav {
     position: absolute;
     top: 70px;
@@ -319,6 +394,7 @@ refreshNuxtData()
     transition: transform 0.3s ease, opacity 0.3s ease;
     pointer-events: none;
     box-shadow: $shadow-md;
+    order: 3;
     
     &--open {
       transform: translateY(0);
@@ -339,12 +415,28 @@ refreshNuxtData()
       padding: 0.75rem;
     }
   }
-
-  .search {
-    margin-left: 0; 
-  }
 }
 
+@media (max-width: 480px) {
+  .header__actions {
+    gap: 0.25rem;
+  }
+  
+  .language-switcher button {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.65rem;
+  }
+  
+  .telegram-link {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .search__btn {
+    width: 32px;
+    height: 32px;
+  }
+}
 
 .main {
   flex: 1;
@@ -414,56 +506,5 @@ refreshNuxtData()
   font-size: 0.8rem;
   margin-top: 0.5rem;
   opacity: 0.7;
-}
-
-
-.ad-banner {
-  background: linear-gradient(
-    135deg, 
-    $secondary 0%, 
-    color-mix(in srgb, $secondary, black 3%) 100%
-  );
-  padding: 1rem 0;
-  border-top: 1px solid rgba($primary, 0.1);
-}
-
-.ad-placeholder {
-  background: rgba($primary, 0.05);
-  border: 2px dashed rgba($primary, 0.3);
-  border-radius: $border-radius;
-  padding: 2rem;
-  text-align: center;
-  color: $text-secondary;
-  
-  p {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-  }
-}
-.telegram-header {
-  margin-left: 0.5rem;
-}
-
-.telegram-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba($primary, 0.1);
-  border-radius: 50%;
-  transition: background 0.3s;
-  color: $text-primary;
-  margin: 0 5px;
-
-  &:hover {
-    background: rgba($primary, 0.2);
-    color: $primary;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
 }
 </style>

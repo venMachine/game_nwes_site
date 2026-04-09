@@ -2,9 +2,9 @@
   <div class="home">
     <section class="hero">
       <div class="hero__content">
-        <h1 class="hero__title">Barracuda</h1>
+        <h1 class="hero__title">{{ $t('site_name') }}</h1>
         <p class="hero__subtitle">
-          Самые свежие новости из мира видеоигр, киберспорта и гейминга
+          {{ $t('site_description') }}
         </p>
       </div>
     </section>
@@ -38,13 +38,13 @@
       />
     </div>
     <div v-else-if="!loading" class="no-news">
-      <p>Новостей пока нет. Скоро добавим!</p>
+      <p>{{ $t('common.no_news') }}</p>
     </div>
-    <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">{{ $t('common.loading') }}</div>
 
     <div v-if="hasMore" class="load-more">
       <button @click="loadMore" :disabled="loading" class="load-more__btn">
-        {{ loading ? 'Загрузка...' : 'Показать ещё' }}
+        {{ loading ? $t('common.loading') : $t('common.show_more') }}
       </button>
     </div>
   </div>
@@ -74,7 +74,6 @@ const allArticles = ref<Article[]>([])
 const totalPages = ref(1)
 const loading = ref(false)
 
-
 const { data: allData } = await useFetch<{ data: Article[] }>(
   () => `${config.public.apiBaseUrl}/articles?limit=1000&category=${activeCategory.value}`
 )
@@ -88,7 +87,6 @@ const allArticlesForFeatured = computed(() => {
 
 const featuredArticle = computed(() => allArticlesForFeatured.value.find(a => a.isFeatured === true))
 
-
 const loadArticles = async () => {
   loading.value = true
   try {
@@ -100,10 +98,7 @@ const loadArticles = async () => {
       }
     })
     const newArticles = res.data || []
-    console.log('newArticles IDs:', newArticles.map(a => a.id))
-    console.log('featuredArticle.value?.id:', featuredArticle.value?.id)
     
-  
     const filtered = newArticles
     
     if (currentPage.value === 1) {
@@ -118,6 +113,7 @@ const loadArticles = async () => {
     loading.value = false
   }
 }
+
 const articlesToShow = computed(() => allArticles.value)
 const hasMore = computed(() => currentPage.value < totalPages.value)
 
@@ -145,9 +141,6 @@ useSeoMeta({
   twitterCard: 'summary_large_image'
 })
 </script>
-
-
-
 
 <style scoped lang="scss">
 @use '~/assets/scss/variables' as *;
@@ -211,7 +204,6 @@ useSeoMeta({
   cursor: pointer;
   transition: all 0.3s ease;
   &:hover {
-   
     border-color: $primary;
   }
   &--active {
@@ -223,7 +215,6 @@ useSeoMeta({
     }
   }
 }
-
 
 .two-columns {
   display: flex;
@@ -248,7 +239,6 @@ useSeoMeta({
   overflow-y: auto;
   scrollbar-width: thin;
   
-  
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -261,7 +251,6 @@ useSeoMeta({
     border-radius: 3px;
   }
 }
-
 
 .news-grid {
   display: grid;

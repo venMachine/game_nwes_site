@@ -1,0 +1,35 @@
+{
+  "site_name": "BarracudaGame",
+  "site_description": "The latest news from the world of video games, esports and gaming",
+  "nav": {
+    "home": "Home",
+    "news": "News",
+    "games": "Games",
+    "esports": "Esports"
+  },
+  "footer": {
+    "about": "About",
+    "advertising": "Advertising",
+    "contacts": "Contacts",
+    "copyright": "All rights reserved"
+  },
+  "common": {
+    "read_more": "Read more",
+    "show_more": "Show more",
+    "loading": "Loading...",
+    "no_news": "No news yet. Coming soon!"
+  },
+  "news_feed": {
+    "title": "📰 News Feed"
+  },
+  "search": {
+    "title": "Search news",
+    "placeholder": "Enter query...",
+    "button": "Search",
+    "no_results": "No results found for '{query}'.",
+    "found": "Found articles: {count}"
+  },
+  "footer": {
+  "disclaimer": "All trademarks belong to their respective owners."
+}
+}

@@ -17,7 +17,7 @@
   ],
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "types": ["@nuxtjs/sitemap"]
+    "types": ["@nuxtjs/sitemap", "@nuxtjs/i18n"]
   }
 
 }
