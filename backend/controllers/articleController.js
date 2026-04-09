@@ -2,22 +2,22 @@ const Article = require('../models/Article');
 const telegramService = require('../services/telegramService');
 const { generateYandexRss, generateGoogleSitemap } = require('../services/newsFeedsService');
 
-exports.getAllArticles = async (req, res) => {
-  try {
-    const { limit = 1000, category, published_to_news } = req.query;
-    const filter = {};
-    if (category && category !== 'all') filter['category.slug'] = category;
-    if (published_to_news === 'true') {
-      filter.$or = [{ published_to_yandex: true }, { published_to_google: true }];
-    }
-    const articles = await Article.find(filter)
-      .sort({ publishedAt: -1, createdAt: -1 })
-      .limit(parseInt(limit));
-    res.json(articles);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+// exports.getAllArticles = async (req, res) => {
+//   try {
+//     const { limit = 1000, category, published_to_news } = req.query;
+//     const filter = {};
+//     if (category && category !== 'all') filter['category.slug'] = category;
+//     if (published_to_news === 'true') {
+//       filter.$or = [{ published_to_yandex: true }, { published_to_google: true }];
+//     }
+//     const articles = await Article.find(filter)
+//       .sort({ publishedAt: -1, createdAt: -1 })
+//       .limit(parseInt(limit));
+//     res.json(articles);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 exports.getAllArticles = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
