@@ -8,9 +8,8 @@ function getYandexCategory(categorySlug) {
     'consoles': 'Консоли',        
     'ratings': 'Рейтинги',             
     'vr-ar': 'VR/AR',                
-    'indie': 'Инди-игры',             
-    'vr-ar': 'Тpc-games',          
-    'омпьютерные игры': 'Интернет'           
+    'indie': 'Инди-игры',                      
+    'Компьютерные игры': 'pc-games'           
   };
   
 
