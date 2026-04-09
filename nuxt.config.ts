@@ -1,10 +1,9 @@
-eexport default defineNuxtConfig({
-
+export default defineNuxtConfig({
   compatibilityDate: '2026-04-09',
   
-  ssr: true,  
+  ssr: true,
   
-  srcDir: 'app/', 
+  srcDir: 'app/',
   
   modules: [
     '@nuxt/image',
@@ -47,12 +46,12 @@ eexport default defineNuxtConfig({
       { code: 'en', name: 'English', iso: 'en-US', file: 'en.json' }
     ],
     defaultLocale: 'ru',
-    strategy: 'prefix_except_default', 
+    strategy: 'prefix_except_default',
     langDir: 'locales/',
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_redirected',
-      redirectOn: 'root' 
+      redirectOn: 'root'
     }
   } as any,
   
@@ -74,7 +73,7 @@ eexport default defineNuxtConfig({
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5000/api',
       siteUrl: process.env.SITE_URL || 'http://localhost:3000',
-      telegramChannelUrl: 'https://t.me/news_barracuda' 
+      telegramChannelUrl: 'https://t.me/news_barracuda'
     }
   },
   
@@ -86,21 +85,16 @@ eexport default defineNuxtConfig({
   },
   
   nitro: {
-    
     prerender: {
-      routes: []  
+      routes: []
     },
-    
     routeRules: {
- 
       '/': { swr: 60 },
-     
       '/news/**': { swr: 300 },
-      
       '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000' } }
     }
   },
-
+  
   future: {
     compatibilityVersion: 4
   }
