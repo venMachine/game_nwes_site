@@ -1,25 +1,24 @@
-export default defineNuxtConfig({
+eexport default defineNuxtConfig({
 
   compatibilityDate: '2026-04-09',
   
- 
+  ssr: true,  
+  
   srcDir: 'app/', 
   
   modules: [
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxtjs/i18n',
-   
-   
   ],
-plugins: [
-  '~/plugins/fontawesome.js'
-],
+  
+  plugins: [
+    '~/plugins/fontawesome.js'
+  ],
   
   css: [
     '~/assets/scss/main.scss'
   ],
-
   
   app: {
     head: {
@@ -41,6 +40,7 @@ plugins: [
       ]
     }
   },
+  
   i18n: {
     locales: [
       { code: 'ru', name: 'Русский', iso: 'ru-RU', file: 'ru.json' },
@@ -55,7 +55,6 @@ plugins: [
       redirectOn: 'root' 
     }
   } as any,
-
   
   image: {
     provider: 'ipx',
@@ -70,8 +69,7 @@ plugins: [
       xxl: 1536
     }
   },
-
- 
+  
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5000/api',
@@ -79,23 +77,29 @@ plugins: [
       telegramChannelUrl: 'https://t.me/news_barracuda' 
     }
   },
-
- 
+  
   devtools: { enabled: true },
-
   
   typescript: {
     strict: false,
     typeCheck: false
   },
-
- 
+  
   nitro: {
+    
     prerender: {
-      routes: ['/'] 
+      routes: []  
+    },
+    
+    routeRules: {
+ 
+      '/': { swr: 60 },
+     
+      '/news/**': { swr: 300 },
+      
+      '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000' } }
     }
   },
-
 
   future: {
     compatibilityVersion: 4
