@@ -25,4 +25,5 @@ logs
 
 public/news-sitemap.xml
 public/yandex-news.xml
-
+public/sitemap.xml
+nuxt.config.ts
