@@ -92,6 +92,11 @@ export default defineNuxtConfig({
       '/': { swr: 60 },
       '/news/**': { swr: 300 },
       '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000' } }
+    },
+    devStorage: {
+      cache: {
+        driver: 'memory'
+      }
     }
   },
   

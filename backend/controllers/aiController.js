@@ -22,44 +22,28 @@ const categoryFeeds = {
     'https://www.goha.ru/rss/:NVIDIA',
     'https://www.ixbt.com/export/sec_video.rss',
     ' https://www.ixbt.com/export/sec_cpu.rss',
-    'https://www.gamespot.com/feeds/mashup',
-    'https://feeds.feedburner.com/ign/games-all',
-    'https://www.rockpapershotgun.com/feed',
-    'https://gameinformer.com/rss.xml',
-    'https://www.theverge.com/rss/games/index.xml',
-    'https://feeds.feedburner.com/ign/news',
   ],
   ratings: [
     'https://www.gamespot.com/feeds/news/',
     'https://www.ferra.ru/exports/rss.xml',
-    'https://www.gamespot.com/feeds/mashup',
     'https://feeds.feedburner.com/ign/games-all',
     'https://www.rockpapershotgun.com/feed',
-    'https://gameinformer.com/rss.xml'
+   
   ],
   'vr-ar': [
     'https://www.roadtovr.com/feed',
-    'https://www.ixbt.com/export/sec_video.rss',
-    'https://www.gamespot.com/feeds/mashup',
     'https://gameinformer.com/rss.xml'
   ],
   indie: [
     'https://www.indiegames.com/feed',
-    'https://www.rockpapershotgun.com/feed',
-    'https://www.gamespot.com/feeds/mashup',
     'https://feeds.feedburner.com/ign/games-all',
-    'https://www.gamespot.com/feeds/news',
     'https://gameinformer.com/rss.xml'
   ],
   'pc-games': [
     'https://feeds.feedburner.com/ign/news',
     'https://www.pcgamer.com/rss/',
     'https://www.gamespot.com/feeds/game-news',
-    'https://feeds.feedburner.com/ign/games-all',
-    'https://www.gamespot.com/feeds/mashup',
-    'https://www.gamespot.com/feeds/news',
     'https://www.eurogamer.net/feed/news',
-    'https://gameinformer.com/rss.xml',
     'https://www.theverge.com/rss/games/index.xml',
   ]
 };
@@ -105,24 +89,21 @@ async function fetchRealNewsFromRSS(category) {
 const authorStyles = {
    1: {
     name: 'Алексей «WinStrike» Воронов',
-    desc: `Стиль: торжественный публицистический.
+    desc: `Стиль: аналитический новостной репортаж, молодежный.
     - Длинные сложные предложения с причастными/деепричастными оборотами.
-    - Метафоры: космос, бездна, океан, судьба, пророчество, цивилизация.
-    - Лексика: "суверенитет", "традиция", "духовность", "рок", "пассионарность".
     - Тон: философский, возвышенный, с ощущением значимости события.
     - Важно: метафоры украшают факты, но НЕ заменяют и НЕ искажают их.`
   },
   2: {
     name: 'Михаил «Mirage» Соколов',
-    desc: `Стиль: театральная историческая драма.
+    desc: `Стиль: аналитический новостной репортаж, молодежный.
     - Обращение к читателю: "Представьте себе...", "И вот тогда...".
     - Риторические вопросы, восклицания, элементы загадочности.
-    - Фразы-маркеры: "Как в старом театре...", "Занавес поднимается...".
     - Важно: драматизм не должен создавать ложное впечатление о фактах.`
   },
   3: {
     name: 'Иван «Retro» Морозов',
-    desc: `Стиль: интеллектуальное эссе с иронией.
+    desc: `Стиль: интеллектуальное эссе с иронией, молодежный.
     - Литературные аллюзии, парадоксы, игра слов.
     - Разговор с читателем на равных, самоирония.
     - Структура: тезис → аргументы → вывод с элементом размышления.
@@ -130,14 +111,14 @@ const authorStyles = {
   },
   4: {
     name: 'Елена «Pixel» Волкова',
-    desc: `Стиль: провокационный светский блог.
+    desc: `Стиль: провокационный светский блог, молодежный.
     - Разговорный тон, сленг, короткие динамичные фразы.
     - Цинизм, самоирония, игра на публику.
     - Важно: провокация — в подаче, а не в искажении фактов.`
   },
   5: {
     name: 'Кирилл «Code» Лебедев',
-    desc: `Стиль: аналитический новостной репортаж.
+    desc: `Стиль: аналитический новостной репортаж, молодежный.
     - Факты, цифры, ссылки, детали — в приоритете.
     - Короткие рубленые фразы, вводные слова: "кстати", "впрочем".
     - Тон: сдержанный, информативный, с элементами диалогичности.
@@ -187,11 +168,13 @@ exports.generateNews = async (req, res) => {
 ${realNewsContext}
 
 **ВАЖНО:** 
+    
 - Используй ТОЛЬКО те новости и ссылки, которые перечислены выше. Если в одном источнике нет всех деталей, используй факты из нескольких, чтобы собрать полную картину. Укажи, что информация основана на нескольких источниках.
 - Если ссылка есть в контексте, используй её. Не добавляй новые ссылки от себя. Не выдумывай события.
 - Если в контексте недостаточно деталей для новости (нет конкретных цифр, дат, названий), верни ошибку.
 
 **КРИТИЧЕСКИ ВАЖНО:**
+- Заголовок "title" должен быть кликабельным!!!!.    
 - **НЕ ВЫДУМЫВАЙ НЕСУЩЕСТВУЮЩИЕ ИГРЫ, ДОПОЛНЕНИЯ, СТУДИИ, РАЗРАБОТЧИКОВ, ДАТЫ.**
 - Сохраняй все факты из контекста (названия, даты, цифры).
 - **Самопроверка:** перед ответом проверь, все ли ключевые факты подтверждаются контекстом. Если нет — верни ошибку.
