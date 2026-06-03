@@ -7,8 +7,7 @@ cd /var/www/game_nwes_site
 export API_BASE_URL=https://barracudagame.ru/api
 export PATH=/usr/bin:/bin:/usr/local/bin:$PATH
 
-# Пересборка фронтенда
 npm run build
-pm2 restart game-news-frontend
+pm2 restart game-frontend
 
 echo "✅ Пересборка выполнена $(date)" >> /var/log/deploy.log
