@@ -9,6 +9,7 @@ export PATH=/usr/bin:/bin:/usr/local/bin:$PATH
 
 npm run build
 pm2 restart game-frontend
+
   
 
 # Копируем статические файлы в .output/public (чтобы Nginx отдавал напрямую)

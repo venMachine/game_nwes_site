@@ -8,6 +8,7 @@
           <div class="logo">
             <NuxtLink to="/" class="logo__link">
               <img
+
   src="/logo-B.png"
   alt="BarracudaGame"
   class="logo__image"
@@ -17,6 +18,7 @@
 />
 
               <span class="logo__text">{{ $t('site_name') }}</span>
+
             </NuxtLink>
           </div>
 
