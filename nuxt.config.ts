@@ -1,6 +1,5 @@
 export default defineNuxtConfig({
-  compatibilityDate: '2026-04-09',
-  
+  compatibilityDate: '2026-04-09',  
   ssr: true,
   
   srcDir: 'app/',
@@ -9,6 +8,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxtjs/i18n',
+   
   ],
   
   plugins: [
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
   image: {
     provider: 'ipx',
     quality: 80,
-    format: ['webp', 'avif', 'jpg'],
+    format: ['webp', 'avif', 'jpg', 'png'],
     screens: {
       xs: 320,
       sm: 640,
@@ -68,7 +68,7 @@ export default defineNuxtConfig({
       xxl: 1536
     }
   },
-  
+   
   runtimeConfig: {
     public: {
       apiBaseUrl: 'https://barracudagame.ru/api',

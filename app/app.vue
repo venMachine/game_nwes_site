@@ -7,15 +7,15 @@
           
           <div class="logo">
             <NuxtLink to="/" class="logo__link">
-              <NuxtImg 
-                src="/logo-B.png" 
-                alt="GameNews" 
-                class="logo__image" 
-                width="42" 
-                height="42"
-                format="webp"
-                loading="eager"
-              />
+              <img
+  src="/logo-B.png"
+  alt="BarracudaGame"
+  class="logo__image"
+  width="42"
+  height="42"
+  loading="eager"
+/>
+
               <span class="logo__text">{{ $t('site_name') }}</span>
             </NuxtLink>
           </div>
