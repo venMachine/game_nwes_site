@@ -104,7 +104,7 @@
             <NuxtLink to="/contacts" class="footer__link">{{ $t('footer.contacts') }}</NuxtLink>
           </div>
           <div class="footer__copyright">
-            <p>&copy; {{ new Date().getFullYear() }} {{ $t('site_name') }}. {{ $t('footer.copyright') }}</p>
+            <p>&copy; 2025 {{ $t('site_name') }}. {{ $t('footer.copyright') }}</p>
             <p>© Илья Говорухин</p>
             <p class="footer__disclaimer">{{ $t('footer.disclaimer') || 'Все торговые марки принадлежат их правообладателям.' }}</p>
           </div>
@@ -186,7 +186,7 @@ onMounted(() => {
 
 .header {
   background-color: black;
-  border-bottom: 1px solid rgba($primary, 0.1);
+  border-bottom: 2px solid rgba($primary, 0.1);
   padding: 1rem 0;
   position: sticky;
   top: 0;
